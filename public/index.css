@@ -1,0 +1,94 @@
+@font-face {
+    font-family: noir;
+    src: url(./fonts/Noir.ttf);
+  }
+  
+  body {
+    margin: 0;
+    font-family: noir;
+  }
+  
+  #logo {
+    width: 25%;
+  }
+  
+  .main-navbar li {
+    font-size: 120%;
+    font-weight: bold;
+  }
+  
+  #services {
+    display: flex;
+    background: #cccccc;
+    flex-flow: wrap;
+    justify-content: space-evenly;
+  }
+  
+  .service {
+    background: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 25%;
+    margin: 3%;
+    text-align: center;
+    position: relative;
+    padding: 1%;
+    transition: all 0.5s;
+  }
+  
+  .service:hover {
+    background: #bbbbbb;
+  }
+  
+  .service h2 {
+    background: black;
+    color: white;
+    padding: 4%;
+    width: 120%;
+    margin-left: -10%;
+    margin-top: 2%;
+    margin-bottom: 3%;
+    border-radius: 3px;
+  }
+  
+  .service h4 {
+    margin-top: 3%;
+    font-weight: bold;
+  }
+  
+  .service img {
+    max-width: 90%;
+    max-height: 150px;
+  }
+  
+  .service-low {
+    margin-top: 2%;
+    margin-bottom: 0;
+  }
+  
+  .service-price-text p {
+    display: inline;
+  }
+  
+  .service-dollar {
+    font-size: 80%;
+    vertical-align: 100%;
+  }
+  
+  .service-price {
+    font-size: 250%;
+  }
+  
+  #services-page {
+    background: #cccccc;
+    text-align: center;
+  }
+  
+  #services-page h1 {
+    padding-top: 2%;
+    font-weight: bold;
+  }
+
+  .bg-dark {
+      background: black;
+  }
