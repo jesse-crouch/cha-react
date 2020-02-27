@@ -3,11 +3,19 @@
     src: url(./fonts/Noir.ttf);
   }
   
-  body {
-    margin: 0;
+  #root {
     font-family: noir;
   }
+
+  html {
+    background: #cccccc;
+  }
   
+  .girl {
+    background: pink;
+    color: black;
+  }
+
   #logo {
     width: 25%;
   }
@@ -19,9 +27,9 @@
   
   #services {
     display: flex;
-    background: #cccccc;
     flex-flow: wrap;
     justify-content: space-evenly;
+    transition: all 0.5s;
   }
   
   .service {
