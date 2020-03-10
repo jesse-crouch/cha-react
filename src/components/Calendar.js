@@ -9,7 +9,7 @@ import monthNames from '../months';
 export default class Calendar extends Component {
     constructor(props) {
         super();
-
+        const urlParams = new URLSearchParams(new URL(window.location.href).search);
         this.state = {
             currentDate: new Date(),
             service: props.id,

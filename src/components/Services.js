@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import $ from 'jquery';
+import { uuid } from 'uuidv4';
 import server from '../fetchServer';
 import Service from './Service';
 import {uuid} from 'uuidv4';
@@ -9,8 +10,7 @@ export default class Services extends Component {
         super();
 
         this.state = {
-            services: [],
-            primary: true
+            services: []
         };
 
         this.handleClick = this.handleClick.bind(this);
@@ -47,7 +47,16 @@ export default class Services extends Component {
             } else {
                 alert('Something went wrong fetching services');
             }
+
+            document.getElementById('backBtn').style.display = 'none';
         });
+    }
+
+    handleBackBtn() {
+        document.getElementById('services').style.opacity = 0;
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
     }
 
     render() {
@@ -56,6 +65,7 @@ export default class Services extends Component {
                 <h1>Our Services</h1>
                 <h5>Scroll through the services offered at Cosgrove Hockey Academy!</h5>
                 <h5>Click on any service for more information and to see available spots.</h5>
+                <button id="backBtn" className="btn btn-secondary" onClick={this.handleBackBtn}>Go Back</button>
                 <div id="services">
                     {this.state.services}
                 </div>

@@ -9,9 +9,14 @@
     "jquery": "^3.4.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+<<<<<<< HEAD
     "react-icons": "^3.9.0",
     "react-scripts": "3.4.0",
     "uuidv4": "^6.0.6"
+=======
+    "react-scripts": "3.4.0",
+    "uuidv4": "^6.0.5"
+>>>>>>> 5ad5211ad03ae6c16361e8de4c36e49b43e5fa25
   },
   "scripts": {
     "start": "react-scripts start",
