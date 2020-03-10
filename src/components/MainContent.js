@@ -4,16 +4,6 @@ import Home from './Home';
 import Calendar from './Calendar';
 
 export default class MainContent extends Component {
-    constructor() {
-        super();
-
-        this.state = {
-            calendarID: null
-        };
-
-        this.setCalendarID = this.setCalendarID.bind(this);
-    }
-
     componentDidMount() {
         const url = window.location.href;
         if (url.includes('services')) {
@@ -21,21 +11,28 @@ export default class MainContent extends Component {
         }
     }
 
-    setCalendarID(id) {
-        this.setState({
-            calendarID: id
-        });
-    }
-
     render() {
         const url = window.location.href;
 
         if (url.includes('services')) {
-            return(<Services setCalendarID={this.setCalendarID} />);
+            return(
+                <div id="main">
+                    <Services />
+                </div>
+            );
         } else if (url.includes('calendar')) {
-            return(<Calendar id={this.state.calendarID} />);  
+            const calendarID = new URL(url).searchParams.get('s');
+            return(
+                <div id="main">
+                    <Calendar id={calendarID} />
+                </div>
+            );
         } else {
-            return(<Home />);
+            return(
+                <div id="main">
+                    <Home />
+                </div>
+            );
         }
     }
 }

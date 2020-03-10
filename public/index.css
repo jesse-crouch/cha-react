@@ -1,94 +1,256 @@
 @font-face {
-    font-family: noir;
-    src: url(./fonts/Noir.ttf);
-  }
-  
-  body {
-    margin: 0;
-    font-family: noir;
-  }
-  
-  #logo {
-    width: 25%;
-  }
-  
-  .main-navbar li {
-    font-size: 120%;
-    font-weight: bold;
-  }
-  
-  #services {
-    display: flex;
-    background: #cccccc;
-    flex-flow: wrap;
-    justify-content: space-evenly;
-  }
-  
-  .service {
-    background: white;
-    border: 1px solid black;
-    border-radius: 5px;
-    width: 25%;
-    margin: 3%;
-    text-align: center;
-    position: relative;
-    padding: 1%;
-    transition: all 0.5s;
-  }
-  
-  .service:hover {
-    background: #bbbbbb;
-  }
-  
-  .service h2 {
+  font-family: noir;
+  src: url('../src/fonts/Noir.ttf');
+}
+
+html {
+  font-family: noir;
+}
+
+body {
+  margin: 0;
+}
+
+#main {
+  background: #cccccc;
+  position: absolute;
+  width: 100%;
+}
+
+#logo {
+  width: 25%;
+}
+
+.main-navbar li {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+#services {
+  display: flex;
+  background: #cccccc;
+  flex-flow: wrap;
+  justify-content: space-evenly;
+}
+
+.service {
+  background: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 25%;
+  margin: 3%;
+  text-align: center;
+  position: relative;
+  padding: 1%;
+  transition: all 0.5s;
+}
+
+.service:hover {
+  background: #bbbbbb;
+}
+
+.service h2 {
+  background: black;
+  color: white;
+  padding: 4%;
+  width: 120%;
+  margin-left: -10%;
+  margin-top: 2%;
+  margin-bottom: 3%;
+  border-radius: 3px;
+}
+
+.service h4 {
+  margin-top: 3%;
+  font-weight: bold;
+}
+
+.service img {
+  max-width: 90%;
+  max-height: 150px;
+}
+
+.service-low {
+  margin-top: 2%;
+  margin-bottom: 0;
+}
+
+.service-price-text p {
+  display: inline;
+}
+
+.service-dollar {
+  font-size: 80%;
+  vertical-align: 100%;
+}
+
+.service-price {
+  font-size: 250%;
+}
+
+#services-page {
+  background: #cccccc;
+  text-align: center;
+}
+
+#services-page h1 {
+  padding-top: 2%;
+  font-weight: bold;
+}
+
+.bg-dark {
     background: black;
-    color: white;
-    padding: 4%;
-    width: 120%;
-    margin-left: -10%;
-    margin-top: 2%;
-    margin-bottom: 3%;
-    border-radius: 3px;
+}
+
+.week {
+  display: flex;
+  flex-direction: row;
+  height: 836px;
+}
+
+.day {
+  flex: 1;
+  border: 1px solid black;
+  text-align: center;
+}
+
+@media(max-width: 950px) {
+  .week {
+    flex-direction: column;
   }
-  
-  .service h4 {
-    margin-top: 3%;
-    font-weight: bold;
-  }
-  
-  .service img {
-    max-width: 90%;
-    max-height: 150px;
-  }
-  
-  .service-low {
-    margin-top: 2%;
-    margin-bottom: 0;
-  }
-  
-  .service-price-text p {
-    display: inline;
-  }
-  
-  .service-dollar {
-    font-size: 80%;
-    vertical-align: 100%;
-  }
-  
-  .service-price {
-    font-size: 250%;
-  }
-  
-  #services-page {
-    background: #cccccc;
-    text-align: center;
-  }
-  
-  #services-page h1 {
-    padding-top: 2%;
-    font-weight: bold;
+}
+
+.event {
+  width: 96%;
+}
+
+.calendar-control {
+  margin: 0.5%;
+  text-align: center;
+}
+
+.calendar-control h1 {
+  margin: 0 2%;
+}
+
+.calendar-control h1,button {
+  display: inline;
+}
+
+.calendar-control button {
+  vertical-align: 0.5em;
+  margin: 0 2%;
+}
+
+.popup {
+  transition: all 0.5s;
+  background: white;
+  text-align: center;
+  width: 40%;
+  margin: 0 auto;
+  box-shadow: 2px 2px 5px 2px #888888;
+  border-radius: 5px;
+  position: relative;
+  top: -500px;
+}
+
+#popup-footer {
+  border-top: 1px solid #cccccc;
+  text-align: right;
+}
+
+.popup h5 {
+  border-bottom: 1px solid #cccccc;
+  padding: 2%;
+}
+
+.popup div {
+  padding: 1%;
+}
+
+.prepend {
+  background: #dddddd;
+  width: 25%;
+  text-align: left;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.prepend p {
+  margin: 0;
+  padding: 1%;
+}
+
+.form-control {
+  width: 100%;
+}
+
+.bg-black {
+  background: black;
+}
+
+#cart {
+  transition: all 0.5s;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px 2px #888888;
+  position: relative;
+  left: 100%;
+  width: 50%;
+  padding: 1%;
+}
+
+#cart-container {
+  position: relative;
+  top: -150px;
+}
+
+#cart table {
+  text-align: center;
+}
+
+#cartBtn {
+  position: relative;
+  font-size: 150%;
+}
+
+#cartBtn svg {
+  transition: all 0.5s;
+}
+
+@media(max-width: 950px) {
+  .popup {
+    width: 90%;
   }
 
-  .bg-dark {
-      background: black;
+  #cart {
+    width: 80%;
   }
+
+  #cartBtn {
+    left: 85%;
+  }
+}
+
+@media(min-width: 1400px) {
+  .popup {
+    width: 30%;
+  }
+
+  #cart {
+    width: 30%;
+  }
+
+  #cartBtn {
+    left: 95%;
+  }
+}
+
+#cart-container {
+  visibility: hidden;
+}
+
+#popup-content .input-group {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}

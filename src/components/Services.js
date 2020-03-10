@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import $ from 'jquery';
 import server from '../fetchServer';
 import Service from './Service';
+import {uuid} from 'uuidv4';
 
 export default class Services extends Component {
     constructor() {
@@ -16,33 +17,32 @@ export default class Services extends Component {
     }
 
     handleClick(service) {
-        if (this.state.primary) {
-            $.post(server + '/api/getSecondaryServices', {
-                service_id: service.id
-            }, (result) => {
-                this.setState({
-                    services: result.services.map(service => {
-                        return <Service key={service.id} service={service} handleClick={this.handleClick} />
-                    }),
-                    primary: false
-                })
-            });
+        if (service.primary_service_id) {
+            // Secondary service, send to calendar
+            window.location.replace('/calendar?s=' + service.id);
         } else {
-            this.props.setCalendarID(service.id);
-            window.location.replace('/calendar');
+            // Primary service, get secondaries
+            $.post(server + '/api/getSecondaryServices', {service_id: service.id}, (result) => {
+                if (result) {
+                    this.setState({
+                        services: result.services.map(service => {
+                            return <Service key={uuid()} handleClick={this.handleClick} service={service} />
+                        })
+                    });
+                } else {
+                    alert('Error while fetching secondary services');
+                }
+            });
         }
     }
 
     componentDidMount() {
         $.get(server + '/api/getServices', (result) => {
             if (result) {
-                this.setState(prevState => {
-                    return {
-                        services: result.services.map(service => {
-                            return <Service handleClick={this.handleClick} key={service.id} service={service} />
-                        }),
-                        primary: prevState.primary
-                    };
+                this.setState({
+                    services: result.services.map(service => {
+                        return <Service key={uuid()} handleClick={this.handleClick} service={service} />
+                    })
                 });
             } else {
                 alert('Something went wrong fetching services');

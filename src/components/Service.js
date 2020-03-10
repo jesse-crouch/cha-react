@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { uuid } from 'uuidv4';
 
 export default class Service extends Component {
     constructor(props) {
@@ -32,10 +33,11 @@ export default class Service extends Component {
 
                     <h4>{subtitle}</h4>
                     {bullets.map(bullet => {
-                        return <p>
+                        return <p key={uuid()}>
                             &bull;{bullet}
                         </p>
                     })}
+                    {}
                 </div>
             </div>
         )
