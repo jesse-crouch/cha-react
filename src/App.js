@@ -10,38 +10,34 @@ import { FaShoppingCart, FaArrowRight } from 'react-icons/fa';
 
 function toggleCart() {
   var open = (document.getElementById('cart-container').style.visibility !== 'visible');
-
   var cartBtn = document.getElementById('cartBtn');
-  cartBtn.children[0].style.opacity = 0;
-  setTimeout(() => {
-    var newIcon = open ? <FaArrowRight /> : <FaShoppingCart />;
-    ReactDOM.render(newIcon, cartBtn);
-    cartBtn.children[0].style.opacity = 1;
-
-    // Change the icon in the cart button
-    
-      // Animate the cart sliding into view or out of view from right to left or from left to right
-      var cart = document.getElementById('cart');
-      var cartCont = document.getElementById('cart-container');
-      if (open) {
-        cartCont.style.visibility = 'visible';
-      }
-      var docWidth = document.getElementById('main').clientWidth;
-      var leftValue = open ? (docWidth - cart.clientWidth) + 'px' : '100%';
-      $('#cart').animate({left: leftValue}, 0);
-      if (!open) {
-        cartCont.style.visibility = 'hidden';
-      }
-    }, 500);
+  
+  // Change the icon in the cart button
+  var newIcon = open ? <FaArrowRight /> : <FaShoppingCart />;
+  ReactDOM.unmountComponentAtNode(cartBtn);
+  ReactDOM.render(newIcon, cartBtn);
+  
+  // Animate the cart sliding into view or out of view from right to left or from left to right
+  var cart = document.getElementById('cart');
+  var cartCont = document.getElementById('cart-container');
+  if (open) {
+    cartCont.style.visibility = 'visible';
+  }
+  var docWidth = document.getElementById('main').clientWidth;
+  var leftValue = open ? (docWidth - cart.clientWidth) + 'px' : '100%';
+  $('#cart').animate({left: leftValue}, 0);
+  if (!open) {
+    cartCont.style.visibility = 'hidden';
+  }
 }
 
 export default class App extends Component {
   componentDidMount() {
-    var cartBtn = document.getElementById('cartBtn');
+    /*var cartBtn = document.getElementById('cartBtn');
     var docWidth = document.getElementById('main').clientWidth;
     var docHeight = document.getElementById('main').clientHeight;
     cartBtn.style.bottom = -(docHeight - 100) + 'px';
-    cartBtn.style.right = -(docWidth - 50) + 'px';
+    cartBtn.style.right = -(docWidth - 50) + 'px';*/
   }
 
   render() {
@@ -51,7 +47,7 @@ export default class App extends Component {
         <MainContent />
         <Popup />
         <Cart />
-        <button className="btn btn-secondary" id="cartBtn" onClick={toggleCart}><FaShoppingCart /></button>
+        <button className="btn btn-dark" id="cartBtn" onClick={toggleCart}><FaShoppingCart /></button>
       </div>
     )
   }

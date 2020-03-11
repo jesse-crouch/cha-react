@@ -3,7 +3,6 @@ import $ from 'jquery';
 import { uuid } from 'uuidv4';
 import server from '../fetchServer';
 import Service from './Service';
-import {uuid} from 'uuidv4';
 
 export default class Services extends Component {
     constructor() {

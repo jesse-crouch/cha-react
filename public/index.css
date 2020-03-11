@@ -194,7 +194,7 @@ body {
   background: white;
   border-radius: 5px;
   box-shadow: 2px 2px 5px 2px #888888;
-  position: relative;
+  position: fixed;
   left: 100%;
   width: 50%;
   padding: 1%;
@@ -210,7 +210,9 @@ body {
 }
 
 #cartBtn {
-  position: relative;
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
   font-size: 150%;
 }
 
