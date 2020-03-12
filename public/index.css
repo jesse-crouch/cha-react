@@ -1,9 +1,9 @@
 @font-face {
   font-family: noir;
-  src: url('../src/fonts/Noir.ttf');
+  src: url(./fonts/Noir.ttf);
 }
 
-html {
+#page {
   font-family: noir;
 }
 
@@ -103,6 +103,7 @@ body {
 }
 
 .week {
+  transition: all 0.2s;
   display: flex;
   flex-direction: row;
   height: 836px;
@@ -192,7 +193,8 @@ body {
 #cart {
   transition: all 0.5s;
   background: white;
-  border-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
   box-shadow: 2px 2px 5px 2px #888888;
   position: fixed;
   left: 100%;

@@ -2,6 +2,7 @@ import time from "../stringDate";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
+import { addToCart, toggleCart } from "./cartMethods";
 
 function removeContent() {
     var popup = document.getElementById('popup');
@@ -9,6 +10,16 @@ function removeContent() {
 }
 
 export function togglePopup(enable) {
+    if (!enable) {
+        var footer = document.getElementById('popup-footer');
+        var addBtn = document.getElementById('addBtn');
+        if (addBtn) { footer.removeChild(document.getElementById('addBtn')); }
+    } else {
+        if (document.getElementById('cart-container').style.visibility === 'visible') {
+            toggleCart();
+        }
+    }
+
     var popup = document.getElementById('popup');
     var topValue = enable ? -50 : -(popup.clientHeight + 150);
     $('#popup').animate({top: topValue + 'px'}, 0);
@@ -50,5 +61,23 @@ export function setEventContent(event) {
         </div>
     </>
     
+    // Add an add to cart button to the popup
+    var addBtn = document.createElement('button');
+    addBtn.id = 'addBtn';
+    addBtn.onclick = () => {
+        document.getElementById('popup-footer').removeChild(addBtn);
+        addToCart(event, true);
+        var button = document.getElementById(event.id + 'b');
+        if (button) {
+            button.style.background = 'green';
+            button.disabled = true;
+        }
+    };
+    addBtn.className = 'btn btn-primary';
+    addBtn.style.float = 'left';
+    addBtn.innerHTML = 'Add to Cart';
+    var closeBtn = document.getElementById('popupCloseBtn');
+    document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
+
     ReactDOM.render(content, popup.children[1]);
 }

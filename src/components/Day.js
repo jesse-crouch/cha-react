@@ -5,6 +5,7 @@ import Event from './Event';
 export default class Day extends Component {
     constructor(props) {
         super();
+        console.log(props.events);
 
         this.state = {
             events: props.events.map(event => {
@@ -15,8 +16,14 @@ export default class Day extends Component {
     }
 
     render() {
+        var currentDate = new Date();
+        var background = (currentDate.getMonth() === this.state.date.getMonth() && currentDate.getDate() === this.state.date.getDate()) ? 'rgb(153, 204, 153)' : '#cccccc';
+        if (this.state.date.getDay() === 0 || this.state.date.getDay() === 6) {
+            background = 'rgb(191,191,191)';
+        }
+
         return (
-            <div className="day">
+            <div className="day" style={{background: background}}>
                 <p>{this.state.date.getDate()}</p>
                 {this.state.events}
             </div>
