@@ -32,7 +32,7 @@ export default class Cart extends Component {
                         <tbody id="cart-table"></tbody>
                     </table>
                     <div id="buttonDiv">
-                        <button className="btn btn-primary" style={{width: '25%'}}>Checkout</button>
+                        <button className="btn btn-primary" style={{width: '25%'}} onClick={() => { window.location.replace('/checkout'); }}>Checkout</button>
                     </div>
                 </div>
             </div>

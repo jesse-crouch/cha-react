@@ -5,10 +5,15 @@
 
 #page {
   font-family: noir;
+  background: #cccccc;
 }
 
 body {
   margin: 0;
+}
+
+html {
+  background: #cccccc;
 }
 
 #main {

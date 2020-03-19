@@ -20,7 +20,7 @@ export default function Event(props) {
     var disabled = false;
     if (cart) {
         for (var i in cart.items) {
-            if (cart.items[i].epoch_date === props.event.epoch_date) {
+            if (cart.items[i].id === props.event.id) {
                 background = '#28a745';
                 disabled = true;
             }

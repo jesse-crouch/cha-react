@@ -29,7 +29,15 @@ export function setPopupContent(title, content) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;
     removeContent();
-    popup.chilren[1].innerHTML = content;
+    var text = <p>{content}</p>;
+    ReactDOM.render(text, popup.children[1]);
+}
+
+export function setHTMLContent(title, content) {
+    var popup = document.getElementById('popup');
+    popup.children[0].innerHTML = title;
+    removeContent();
+    ReactDOM.render(content, popup.children[1]);
 }
 
 export function setEventContent(event) {

@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import Services from './Services';
 import Home from './Home';
 import Calendar from './Calendar';
+import Checkout from './Checkout';
+import Login from './Login';
+import Account from './Account';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -25,6 +28,24 @@ export default class MainContent extends Component {
             return(
                 <div id="main">
                     <Calendar id={calendarID} />
+                </div>
+            );
+        } else if (url.includes('checkout')) {
+            return (
+                <div id="main">
+                    <Checkout />
+                </div>
+            );
+        } else if (url.includes('login')) {
+            return (
+                <div id="main">
+                    <Login />
+                </div>
+            );
+        } else if (url.includes('account')) {
+            return (
+                <div id="main">
+                    <Account />
                 </div>
             );
         } else {
