@@ -3,6 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import { addToCart, toggleCart } from "./cartMethods";
+import monthNames from "../months";
+import server from "../fetchServer";
 
 function removeContent() {
     var popup = document.getElementById('popup');
@@ -33,11 +35,132 @@ export function setPopupContent(title, content) {
     ReactDOM.render(text, popup.children[1]);
 }
 
-export function setHTMLContent(title, content) {
+export function setHTMLContent(title, content, width = '', button = false) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;
     removeContent();
     ReactDOM.render(content, popup.children[1]);
+    document.getElementById('popup').style.width = width;
+
+    console.log(button);
+    if (button) {
+        // Add an add to cart button to the popup
+        var addBtn = document.createElement('button');
+        addBtn.id = 'addEventBtn';
+        addBtn.onclick = () => {
+            document.getElementById('popup-footer').removeChild(addBtn);
+            // Get all of the entered values
+            var nameField = document.getElementById('newEventName');
+            var spotsField = document.getElementById('newEventSpots');
+            var name = nameField.value;
+            var spots = spotsField.value;
+
+            var serviceSelect = document.getElementById('newEventService');
+            var instructorSelect = document.getElementById('newEventInstructor');
+            var monthSelect = document.getElementById('newEventMonth');
+            var daySelect = document.getElementById('newEventDay');
+            var yearSelect = document.getElementById('newEventYear');
+            var startSelect = document.getElementById('newEventStart');
+            var durationSelect = document.getElementById('newEventDuration');
+
+            var service = serviceSelect.options[serviceSelect.selectedIndex].getAttribute('id');
+            var instructor = instructorSelect.options[instructorSelect.selectedIndex].getAttribute('id');
+            var duration = durationSelect.options[durationSelect.selectedIndex].value;
+            var start = startSelect.options[startSelect.selectedIndex].getAttribute('time');
+
+            var month = monthNames.indexOf(monthSelect.options[monthSelect.selectedIndex].value);
+            var day = daySelect.options[daySelect.selectedIndex].value;
+            var year = yearSelect.options[yearSelect.selectedIndex].value;
+
+            // Check all of the information
+            var validData = false;
+            if (name.length === 0) {
+                validData = false;
+                nameField.style.border = '2px solid red';
+            }
+            if (!service) {
+                validData = false;
+                serviceSelect.style.border = '2px solid red';
+            }
+            if (!instructor) {
+                validData = false;
+                instructorSelect.style.border = '2px solid red';
+            }
+            if (month === -1) {
+                validData = false;
+                monthSelect.style.border = '2px solid red';
+            }
+            if (isNaN(day)) {
+                validData = false;
+                daySelect.style.border = '2px solid red';
+            }
+            if (isNaN(year)) {
+                validData = false;
+                yearSelect.style.border = '2px solid red';
+            }
+            if (!start) {
+                validData = false;
+                startSelect.style.border = '2px solid red';
+            }
+            if (isNaN(duration)) {
+                validData = false;
+                durationSelect.style.border = '2px solid red';
+            }
+            if (isNaN(parseInt(spots))) {
+                validData = false;
+                spotsField.style.border = '2px solid red';
+            }
+
+            if (validData) {
+                var timeInfo = start.split(',');
+                var durationNum = duration.split(' ')[0];
+                var date = new Date(year, month, day, timeInfo[0], timeInfo[1],0,0);
+
+                // Check for recurrence
+                var days = [];
+                if (document.getElementById('recurCheck').checked) {
+                    // Get a list of all days checked
+                    if (document.getElementById('sundayCheck').checked) days.push(0);
+                    if (document.getElementById('mondayCheck').checked) days.push(1);
+                    if (document.getElementById('tuesdayCheck').checked) days.push(2);
+                    if (document.getElementById('wednesdayCheck').checked) days.push(3);
+                    if (document.getElementById('thursdayCheck').checked) days.push(4);
+                    if (document.getElementById('fridayCheck').checked) days.push(5);
+                    if (document.getElementById('saturdayCheck').checked) days.push(6);
+                }
+
+                // Send information to server
+                $.post(server + '/api/addEvent', {
+                    name: name,
+                    instructor: instructor,
+                    service: service,
+                    spots: spots,
+                    date: date,
+                    duration: durationNum,
+                    days: days
+                }, result => {
+                    if (result.error) {
+                        togglePopup(false);
+                        setPopupContent('Error', result.error);
+                        togglePopup(true);
+                    } else {
+                        // Event added
+                        togglePopup(false);
+                        setPopupContent('Event Added', 'The event was successfully added. Refreshing page shortly...');
+                        togglePopup(true);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                });
+            }
+        };
+        addBtn.className = 'btn btn-primary';
+        addBtn.style.float = 'left';
+        addBtn.innerHTML = 'Add Event';
+        var closeBtn = document.getElementById('popupCloseBtn');
+        document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
+    }
 }
 
 export function setEventContent(event) {

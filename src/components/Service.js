@@ -12,8 +12,8 @@ export default class Service extends Component {
 
     render() {
         const imgLoc = "./images/" + this.state.service.img;
-        const subtitle = this.state.service.description[0].split('^')[0];
-        const bullets = this.state.service.description[0].split('^')[1].split('~');
+        const subtitle = this.state.service.description[0];
+        const bullets = this.state.service.description.slice(1);
 
         const priceData = this.state.service.price.split('/');
 

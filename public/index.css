@@ -263,3 +263,10 @@ html {
   margin-bottom: 0;
   padding-bottom: 0;
 }
+
+#addEventFixedBtn {
+  position: fixed;
+  bottom: 5%;
+  font-size: 135%;
+  left: 5%;
+}

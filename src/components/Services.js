@@ -3,6 +3,7 @@ import $ from 'jquery';
 import { uuid } from 'uuidv4';
 import server from '../fetchServer';
 import Service from './Service';
+import { addToCart } from './cartMethods';
 
 export default class Services extends Component {
     constructor() {
@@ -16,28 +17,32 @@ export default class Services extends Component {
     }
 
     handleClick(service) {
-        if (service.primary_service_id) {
-            // Secondary service, send to calendar
-            window.location.replace('/calendar?s=' + service.id);
+        if (service.cart) {
+            // Add this event straight to the cart
+            $.post(server + '/api/getEvent', { id: service.id }, result => {
+                addToCart(result.event, true);
+            });
         } else {
-            // Primary service, get secondaries
-            $.post(server + '/api/getSecondaryServices', {service_id: service.id}, (result) => {
-                if (result) {
+            $.post(server + '/api/getServices', { id: service.id }, result => {
+                if (result.services.length > 0) {
+                    // Populate the next chain of services
                     this.setState({
                         services: result.services.map(service => {
-                            return <Service key={uuid()} handleClick={this.handleClick} service={service} />
+                            return <Service key={uuid()} handleClick={this.handleClick} service={service} />;
                         })
                     });
                 } else {
-                    alert('Error while fetching secondary services');
+                    // Direct to calendar
+                    window.location.replace('/calendar?s=' + service.id);
                 }
             });
         }
     }
 
     componentDidMount() {
-        $.get(server + '/api/getServices', (result) => {
+        $.post(server + '/api/getServices', (result) => {
             if (result) {
+                console.log(result);
                 this.setState({
                     services: result.services.map(service => {
                         return <Service key={uuid()} handleClick={this.handleClick} service={service} />
