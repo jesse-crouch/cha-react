@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 export default function Event(props) {
     const start = new Date(props.event.epoch_date*1000);
     const end = new Date(start.getTime());
-    end.setHours(end.getHours(), end.getMinutes() + (props.event.duration*60));
+    end.setUTCMinutes(end.getUTCMinutes() + (props.event.duration*60));
     const height = (4.2*props.event.duration) + 'em';
 
     // Check if this event is in the past
@@ -14,21 +14,40 @@ export default function Event(props) {
         display = 'none';
     }
 
+    // Set colour based on number of open event spots
+    var ratio = props.event.open_spots / props.event.total_spots;
+    var className = 'event btn btn-';
+    var disabled = false;
+    if (ratio >= 0.8) {
+        className += 'primary';
+    } else if (ratio >= 0.5 && ratio < 0.8) {
+        className += 'warning';
+    } else if (ratio >= 0.2 && ratio < 0.5) {
+        className += 'danger';
+    } else {
+        className += 'dark';
+        disabled = true;
+    }
+    className += ' my-1';
+
     // Check if this event is currently in the cart
     var cart = Cookies.getJSON('cart');
-    var background = '#007bff';
-    var disabled = false;
     if (cart) {
         for (var i in cart.items) {
             if (cart.items[i].id === props.event.id) {
-                background = '#28a745';
+                className = 'event btn btn-success my-1';
                 disabled = true;
             }
         }
     }
 
+    if (props.event.name === 'Class Scheduled') {
+        className = 'event btn btn-dark my-1';
+        disabled = true;
+    }
+
     return (
-        <button id={props.event.id + 'b'} className="event btn btn-primary my-1" style={{height: height, background: background, display: display}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
+        <button id={props.event.id + 'b'} className={className} style={{height: height, display: display}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
             {time(start) + ' - ' + time(end)}
         </button>
     )

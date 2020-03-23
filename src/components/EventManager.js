@@ -5,6 +5,7 @@ import { setEventContent, togglePopup, setHTMLContent } from './popupMethods';
 import $ from 'jquery';
 import Day from './Day';
 import { uuid } from 'uuidv4';
+import time from '../stringDate';
 
 export default class EventManager extends Component {
     constructor() {
@@ -18,6 +19,7 @@ export default class EventManager extends Component {
     }
 
     handleEventClick(event) {
+        event.managed = true;
         setEventContent(event);
         togglePopup(true);
     }
@@ -32,12 +34,15 @@ export default class EventManager extends Component {
         this.setState({
             currentDate: newDate
         });
+        this.updateWeek();
     }
 
     updateWeek() {
+        document.getElementById('calendar').style.opacity = 0;
         $.post(server + '/api/getEventManagerEvents', { date: this.state.currentDate.getTime() }, result => {
             var days = [];
-            var date = new Date();
+            var date = this.state.currentDate;
+            date.setDate(date.getDate() - date.getDay());
             var currentDate = new Date();
 
             for (var i=0; i<7; i++) {
@@ -48,7 +53,8 @@ export default class EventManager extends Component {
                         events.push(result.events[j]);
                     }
                 }
-                days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} />);
+                console.log(date.toUTCString());
+                days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={true} />);
                 date.setDate(date.getDate() + 1);
             }
             date.setDate(date.getDate()-7);
@@ -57,7 +63,7 @@ export default class EventManager extends Component {
                 days: days
             });
             setTimeout(() => {
-                document.getElementById('week').style.opacity = 1;
+                document.getElementById('calendar').style.opacity = 1;
             }, 200);
         });
     }
@@ -164,18 +170,99 @@ export default class EventManager extends Component {
             </div>
         </div>;
         setHTMLContent('Add Event(s)', html, '40%', true);
+
+        // Populate html selects
+        $.get(server + '/api/getSelectData', result => {
+            // Populate service select
+            var serviceSelect = document.getElementById('newEventService');
+            // eslint-disable-next-line
+            for (var i in result.services) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = result.services[i].fullServiceName;
+                newOption.setAttribute('id', result.services[i].id);
+                serviceSelect.appendChild(newOption);
+            }
+
+            // Populate instructor select
+            var instructorSelect = document.getElementById('newEventInstructor');
+            // eslint-disable-next-line
+            for (var i in result.instructors) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = result.instructors[i].fullname;
+                newOption.setAttribute('id', result.instructors[i].id);
+                instructorSelect.appendChild(newOption);
+            }
+
+            // Populate month select
+            var monthSelect = document.getElementById('newEventMonth');
+            // eslint-disable-next-line
+            for (var i=0; i<12; i++) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = monthNames[i];
+                monthSelect.appendChild(newOption);
+            }
+
+            // Populate day select
+            var daySelect = document.getElementById('newEventDay');
+            // eslint-disable-next-line
+            for (var i=1; i<32; i++) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = i;
+                daySelect.appendChild(newOption);
+            }
+
+            // Populate year select
+            var yearSelect = document.getElementById('newEventYear');
+            var currentYear = new Date().getFullYear();
+            // eslint-disable-next-line
+            for (var i=0; i<5; i++) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = currentYear;
+                currentYear += 1;
+                yearSelect.appendChild(newOption);
+            }
+
+            // Populate start select
+            var startSelect = document.getElementById('newEventStart');
+            var trackDate = new Date(Date.UTC(2020,1,1,7,30,0,0));
+            // eslint-disable-next-line
+            for (var i=0; i<36; i++) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                trackDate.setUTCMinutes(trackDate.getUTCMinutes() + 30);
+                newOption.innerHTML = time(trackDate);
+                newOption.setAttribute('timeInfo', trackDate.getUTCHours() + ',' + trackDate.getUTCMinutes());
+                startSelect.appendChild(newOption);
+            }
+
+            // Populate duration select
+            var durationSelect = document.getElementById('newEventDuration');
+            // eslint-disable-next-line
+            for (var i=0; i<9; i++) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = (i === 0) ? '30 Minutes' : (i === 1) ? i + ' Hour' : i + ' Hours';
+                durationSelect.appendChild(newOption);
+            }
+        });
+
         togglePopup(true);
     }
 
     render() {
         return (
-            <div id="calendar" style={{position: 'relative'}}>
-                <div className="calendar-control">
+            <div id="calendar" style={{position: 'relative', transition: 'all 0.5s'}}>
+                <div id="calendar-control" className="calendar-control" style={{height: '5vh'}}>
                     <button id="prevBtn" className="btn btn-light" onClick={() => this.changeWeek(false)}>Previous</button>
                     <h1>{monthNames[this.state.currentDate.getMonth()]}</h1>
                     <button id="nextBtn" className="btn btn-light" onClick={() => this.changeWeek(true)}>Next</button>
                 </div>
-                <div id="week" className="week">
+                <div id="week" className="week" style={{height: '82vh'}}>
                     {this.state.days}
                 </div>
                 <button id="addEventFixedBtn" className="btn btn-primary" onClick={this.handleAddEvent}>Add Event</button>

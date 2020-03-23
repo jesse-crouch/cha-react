@@ -111,7 +111,6 @@ html {
   transition: all 0.2s;
   display: flex;
   flex-direction: row;
-  height: 836px;
 }
 
 .day {

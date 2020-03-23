@@ -5,7 +5,6 @@ import Event from './Event';
 export default class Day extends Component {
     constructor(props) {
         super();
-        console.log(props.events);
 
         this.state = {
             events: props.events.map(event => {

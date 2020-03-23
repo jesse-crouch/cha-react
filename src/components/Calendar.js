@@ -35,7 +35,9 @@ export default class Calendar extends Component {
                     window.location.replace('/services');
                 }, 3000);
             } else {
+                console.log(result.resourceConflicts);
                 var days = [];
+                var flaggedTimes = [];
                 var date = new Date(result.startDate);
                 var currentDate = new Date();
                 var eventNum = 0;
@@ -45,7 +47,11 @@ export default class Calendar extends Component {
                     for (var j in result.events) {
                         const eventDate = new Date(result.events[j].epoch_date*1000);
                         if (eventDate.getDay() === i && i >= currentDate.getDay()) {
-                            events.push(result.events[j]);
+                            if (result.events[j].type === 'class') {
+                                events.push(result.events[j]);
+                            } else {
+                                flaggedTimes.push([result.events[j].epoch_date, result.events[j].open_spots]);
+                            }
                         }
                     }
 
@@ -58,24 +64,41 @@ export default class Calendar extends Component {
                         var trackDate = new Date(date.getTime());
                         trackDate.setUTCHours(open_time,0,0,0);
                         for (var k=0; k<((close_time - open_time) / result.service_info.duration); k++) {
+                            var spots = result.service_info.spots;
+                            for (var l in flaggedTimes) {
+                                if (flaggedTimes[l][0] === trackDate.getTime()/1000) {
+                                    spots = flaggedTimes[l][1];
+                                }
+                            }
                             var event = {
                                 id: 'i-' + eventNum,
-                                event_name: result.service_info.fullServiceName,
+                                name: result.service_info.fullServiceName,
                                 duration: result.service_info.duration,
+                                service_id: result.service_info.id,
                                 price: result.service_info.price,
                                 epoch_date: trackDate.getTime() / 1000,
-                                open_spots: result.service_info.spots,
+                                open_spots: spots,
                                 total_spots: result.service_info.spots,
-                                instructor: result.service_info.default_instructor,
-                                instructor_name: result.service_info.instructor_name
+                                instructor_name: result.service_info.instructor_name,
+                                type: 'open'
                             };
+
+                            // Check for resource conflict
+                            // eslint-disable-next-line
+                            for (var l in result.resourceConflicts) {
+                                if (result.resourceConflicts[l].epoch_date === trackDate.getTime()/1000) {
+                                    event.name = 'Class Scheduled';
+                                    event.duration = result.resourceConflicts[l].duration;
+                                }
+                            }
+
                             trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
                             events.push(event);
                             eventNum++;
                         }
                     }
 
-                    days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} />);
+                    days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={false} />);
                     date.setDate(date.getDate() + 1);
                 }
                 date.setDate(date.getDate()-7);
@@ -106,6 +129,7 @@ export default class Calendar extends Component {
     }
 
     handleEventClick(event) {
+        event.managed = false;
         setEventContent(event);
         togglePopup(true);
     }

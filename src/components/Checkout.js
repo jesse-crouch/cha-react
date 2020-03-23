@@ -6,6 +6,7 @@ import CheckoutForm from './CheckoutForm';
 import $ from 'jquery';
 import server from '../fetchServer';
 import { /*setHTMLContent,*/ togglePopup, setPopupContent } from './popupMethods';
+import { uuid } from 'uuidv4';
 //import { uuid } from 'uuidv4';
 
 var subtotal = 0;
@@ -18,33 +19,34 @@ export default class Checkout extends Component {
         var tax = subtotal*0.13;
         total = Number.parseFloat(subtotal) + Number.parseFloat(tax);
         this.addRow({
-            event_name: '',
+            name: '',
             time: 'Subtotal',
             price: subtotal + '/'
         });
         this.addRow({
-            event_name: '',
+            name: '',
             time: 'Tax (HST)',
             price: tax + '/'
         });
         this.addRow({
-            event_name: '',
+            name: '',
             time: 'Total',
             price: total + '/'
         });
         ReactDOM.render(<CheckoutForm amount={total} />, document.getElementById('details'));
     }
 
-    addRow(event) {
+    addRow(event, id = uuid()) {
         var cartBody = document.getElementById('checkout-table');
         var newRow = document.createElement('tr');
+        newRow.id = id;
 
         var nameRow = document.createElement('td');
         var timeRow = document.createElement('td');
         var priceRow = document.createElement('td');
 
-        nameRow.innerHTML = event.event_name;
-        if (event.event_name.length > 0) {
+        nameRow.innerHTML = event.name;
+        if (event.name.length > 0) {
             var start = new Date(event.epoch_date*1000);
             var end = new Date(start.getTime());
             end.setMinutes(end.getMinutes() + (60*event.duration));
@@ -52,7 +54,7 @@ export default class Checkout extends Component {
         } else {
             timeRow.innerHTML = event.time;
         }
-        if (event.event_name.length === 0) {
+        if (event.name.length === 0) {
             if (event.time.includes('Membership')) {
                 priceRow.innerHTML = '-' + this.extractPrice(event.price);
             } else {
@@ -73,7 +75,7 @@ export default class Checkout extends Component {
         var price = Number.parseFloat(event.target.parentNode.children[1].innerHTML);
         subtotal -= price;
         this.addRow({
-            event_name: '',
+            name: '',
             time: 'Membership Discount',
             price: price + '/'
         });
@@ -105,13 +107,13 @@ export default class Checkout extends Component {
                                 classes.push(items[i]);
                             }
                         }
-                        if (classes.length > 1) {
+                        if (classes.length > 0) {
                             // Apply the discount to the only class in the cart
                             this.addRow({
-                                event_name: '',
+                                name: '',
                                 time: 'Membership Discount',
                                 price: classes[0].price
-                            });
+                            }, 'membershipRow');
                             subtotal -= this.extractPrice(classes[0].price);
                         }
                         /*if (classes.length > 1) {
@@ -127,7 +129,7 @@ export default class Checkout extends Component {
                                         <input id={uuid()} type="radio" onClick={(e) => this.updateClassSelection(e)} />
                                         <div style={{display: 'none'}}>{this.extractPrice(classes[j].price)}</div>
                                     </td>
-                                    <td>{classes[j].event_name}</td>
+                                    <td>{classes[j].name}</td>
                                     <td>{time(start) + ' - ' + time(end)}</td>
                                     <td>{this.extractPrice(classes[j].price)}</td>
                                 </tr>;

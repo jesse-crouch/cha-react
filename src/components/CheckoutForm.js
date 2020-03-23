@@ -20,20 +20,24 @@ export default class CheckoutForm extends Component {
             });
             document.getElementById('submitBtn').style.display = '';
 
-            $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
-                this.setState(prevState => {
-                    return {
-                        stripePromise: prevState.stripePromise,
-                        clientSecret: prevState.clientSecret,
-                        payload: result.payload         
-                    };
+            if (Cookies.get('token')) {
+                $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                    this.setState(prevState => {
+                        return {
+                            stripePromise: prevState.stripePromise,
+                            clientSecret: prevState.clientSecret,
+                            payload: result.payload         
+                        };
+                    });
                 });
-            });
+            }
         });
 
         this.state = {
             stripePromise: loadStripe('pk_test_cAJXHTciFWzvt1n3Tq1nLpsZ003fCUfr5C')
         }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -61,13 +65,14 @@ export default class CheckoutForm extends Component {
 
     handleSubmit() {
         // Check for entered fields on checkout form
+        var firstNameField = document.getElementById('firstNameField');
+        var lastNameField = document.getElementById('lastNameField');
+        var phoneField = document.getElementById('phoneField');
+        var emailField = document.getElementById('emailField');
+        var minorCheck = document.getElementById('minorCheck');
+
         var completeOrder = true;
-        if (Cookies.get('token')) {
-            var firstNameField = document.getElementById('firstNameField');
-            var lastNameField = document.getElementById('lastNameField');
-            var phoneField = document.getElementById('phoneField');
-            var emailField = document.getElementById('emailField');
-            var minorCheck = document.getElementById('minorCheck');
+        if (!Cookies.get('token')) {            
             if (firstNameField.value.length === 0) {
                 firstNameField.style.border = '2px solid red';
                 completeOrder = false;
@@ -99,34 +104,27 @@ export default class CheckoutForm extends Component {
             }
         }
 
-        // Assemble the item ids
-        var itemIDs = [];
-        var items = Cookies.getJSON('cart').items;
-        for (var i in items) {
-            var item = {};
-            item.id = items[i].id;
-            item.date = items[i].epoch_date;
-            itemIDs.push(item);
-        }
-
         if (completeOrder) {
             var token = Cookies.get('token');
-            var first_name = token ? this.state.payload.last_name : firstNameField.value.toLowerCase();
+            var user_id = token ? this.state.payload.id : null;
+            var first_name = token ? this.state.payload.first_name : firstNameField.value.toLowerCase();
             var last_name = token ? this.state.payload.last_name : lastNameField.value.toLowerCase();
             var email = token ? this.state.payload.email : emailField.value.toLowerCase();
             var phone = token ? this.state.payload.phone : phoneField.value.toLowerCase();
             var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : null;
             var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : null;
 
-            $.post(server + '/sale', {
+            $.post(server + '/api/sale', {
+                user_id: user_id,
                 first_name: first_name,
                 last_name: last_name,
                 email: email,
                 phone: phone,
                 child_first_name: child_first_name,
                 child_last_name: child_last_name,
-                items: itemIDs,
-                amount_due: this.props.amount
+                amount_due: this.props.amount,
+                cart: Cookies.get('cart'),
+                free: document.getElementById('membershipRow') != null
             }, result => {
                 if (!result.error) {
                     setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
@@ -138,7 +136,8 @@ export default class CheckoutForm extends Component {
                         window.location.replace('/services');
                     }, 3000);
                 } else {
-
+                    setPopupContent('Error', result.error);
+                    togglePopup(true);
                 }
             });
         }
@@ -161,7 +160,7 @@ export default class CheckoutForm extends Component {
                     <div className="form-row non-user">
                         <div className="form-group col-md-12">
                             <label>Email Address</label>
-                            <input className="form-control" id="phoneField" type="text" />
+                            <input className="form-control" id="emailField" type="text" />
                         </div>
                     </div>
                     <div className="form-row non-user">

@@ -15,7 +15,9 @@ export function togglePopup(enable) {
     if (!enable) {
         var footer = document.getElementById('popup-footer');
         var addBtn = document.getElementById('addBtn');
+        var addEventBtn = document.getElementById('addEventBtn');
         if (addBtn) { footer.removeChild(document.getElementById('addBtn')); }
+        if (addEventBtn) { footer.removeChild(document.getElementById('addEventBtn')); }
     } else {
         if (document.getElementById('cart-container').style.visibility === 'visible') {
             toggleCart();
@@ -41,14 +43,12 @@ export function setHTMLContent(title, content, width = '', button = false) {
     removeContent();
     ReactDOM.render(content, popup.children[1]);
     document.getElementById('popup').style.width = width;
-
-    console.log(button);
+    
     if (button) {
         // Add an add to cart button to the popup
         var addBtn = document.createElement('button');
         addBtn.id = 'addEventBtn';
         addBtn.onclick = () => {
-            document.getElementById('popup-footer').removeChild(addBtn);
             // Get all of the entered values
             var nameField = document.getElementById('newEventName');
             var spotsField = document.getElementById('newEventSpots');
@@ -66,14 +66,14 @@ export function setHTMLContent(title, content, width = '', button = false) {
             var service = serviceSelect.options[serviceSelect.selectedIndex].getAttribute('id');
             var instructor = instructorSelect.options[instructorSelect.selectedIndex].getAttribute('id');
             var duration = durationSelect.options[durationSelect.selectedIndex].value;
-            var start = startSelect.options[startSelect.selectedIndex].getAttribute('time');
+            var start = startSelect.options[startSelect.selectedIndex].getAttribute('timeInfo');
 
             var month = monthNames.indexOf(monthSelect.options[monthSelect.selectedIndex].value);
             var day = daySelect.options[daySelect.selectedIndex].value;
             var year = yearSelect.options[yearSelect.selectedIndex].value;
 
             // Check all of the information
-            var validData = false;
+            var validData = true;
             if (name.length === 0) {
                 validData = false;
                 nameField.style.border = '2px solid red';
@@ -102,7 +102,7 @@ export function setHTMLContent(title, content, width = '', button = false) {
                 validData = false;
                 startSelect.style.border = '2px solid red';
             }
-            if (isNaN(duration)) {
+            if (duration.includes('Choose')) {
                 validData = false;
                 durationSelect.style.border = '2px solid red';
             }
@@ -110,11 +110,16 @@ export function setHTMLContent(title, content, width = '', button = false) {
                 validData = false;
                 spotsField.style.border = '2px solid red';
             }
-
             if (validData) {
+                //document.getElementById('popup-footer').removeChild(addBtn);
                 var timeInfo = start.split(',');
                 var durationNum = duration.split(' ')[0];
-                var date = new Date(year, month, day, timeInfo[0], timeInfo[1],0,0);
+                if (duration.split(' ')[1].includes('Hour')) {
+                    durationNum *= 60;
+                } else {
+                    durationNum = 30;
+                }
+                var date = new Date(Date.UTC(year, month, day, timeInfo[0], timeInfo[1],0,0));
 
                 // Check for recurrence
                 var days = [];
@@ -135,9 +140,9 @@ export function setHTMLContent(title, content, width = '', button = false) {
                     instructor: instructor,
                     service: service,
                     spots: spots,
-                    date: date,
+                    date: date.getTime()/1000,
                     duration: durationNum,
-                    days: days
+                    days: JSON.stringify(days)
                 }, result => {
                     if (result.error) {
                         togglePopup(false);
@@ -165,7 +170,7 @@ export function setHTMLContent(title, content, width = '', button = false) {
 
 export function setEventContent(event) {
     var popup = document.getElementById('popup');
-    popup.children[0].innerHTML = event.event_name;
+    popup.children[0].innerHTML = event.name;
     removeContent();
     var start = new Date(event.epoch_date*1000);
     var end = new Date(start.getTime());
@@ -192,21 +197,31 @@ export function setEventContent(event) {
         </div>
     </>
     
-    // Add an add to cart button to the popup
+    // Add an add to cart button to the popup, or delete if managed
     var addBtn = document.createElement('button');
-    addBtn.id = 'addBtn';
-    addBtn.onclick = () => {
-        document.getElementById('popup-footer').removeChild(addBtn);
-        addToCart(event, true);
-        var button = document.getElementById(event.id + 'b');
-        if (button) {
-            button.style.background = 'green';
-            button.disabled = true;
-        }
-    };
-    addBtn.className = 'btn btn-primary';
-    addBtn.style.float = 'left';
-    addBtn.innerHTML = 'Add to Cart';
+    if (event.managed) {
+        addBtn.id = 'deleteEventBtn';
+        addBtn.onclick = () => {
+            // TODO
+        };
+        addBtn.innerHTML = 'Delete';
+        addBtn.className = 'btn btn-danger';
+        addBtn.style.float = 'left';
+    } else {
+        addBtn.id = 'addBtn';
+        addBtn.onclick = () => {
+            document.getElementById('popup-footer').removeChild(addBtn);
+            addToCart(event, true);
+            var button = document.getElementById(event.id + 'b');
+            if (button) {
+                button.style.background = 'green';
+                button.disabled = true;
+            }
+        };
+        addBtn.className = 'btn btn-primary';
+        addBtn.style.float = 'left';
+        addBtn.innerHTML = 'Add to Cart';
+    }
     var closeBtn = document.getElementById('popupCloseBtn');
     document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
 

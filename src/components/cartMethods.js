@@ -48,7 +48,7 @@ export function addToCart(event, refresh) {
     var priceRow = document.createElement('td');
     var removeRow = document.createElement('td');
 
-    nameRow.innerHTML = event.event_name;
+    nameRow.innerHTML = event.name;
     var start = new Date(event.epoch_date*1000);
     var end = new Date(start.getTime());
     end.setMinutes(end.getMinutes() + (60*event.duration));

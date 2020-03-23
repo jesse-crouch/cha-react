@@ -70,7 +70,7 @@ export default function PaymentForm(props) {
         if (result.error) {
             // Show error to your customer (e.g., insufficient funds)
             console.log(result.error.message);
-            setPopupContent('Error', 'You have insufficient funds on the card entered. Please try another card.');
+            setPopupContent('Error', result.error.message);
             togglePopup(true);
         } else {
             // The payment has been processed!
@@ -91,6 +91,7 @@ export default function PaymentForm(props) {
                 }
 
                 var token = Cookies.get('token');
+                var user_id = token ? this.state.payload.id : null;
                 var first_name = token ? this.state.payload.last_name : firstNameField.value.toLowerCase();
                 var last_name = token ? this.state.payload.last_name : lastNameField.value.toLowerCase();
                 var email = token ? this.state.payload.email : emailField.value.toLowerCase();
@@ -99,6 +100,7 @@ export default function PaymentForm(props) {
                 var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : null;
 
                 $.post(server + '/sale', {
+                    user_id: user_id,
                     first_name: first_name,
                     last_name: last_name,
                     email: email,
@@ -106,7 +108,8 @@ export default function PaymentForm(props) {
                     child_first_name: child_first_name,
                     child_last_name: child_last_name,
                     items: itemIDs,
-                    amount_due: 0
+                    amount_due: 0,
+                    free: document.getElementById('membershipRow') != null
                 }, result => {
                     if (!result.error) {
                         setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
