@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import time from "../stringDate";
+import {time} from "../stringDate";
 import { togglePopup } from './popupMethods';
 import React from 'react';
 import ReactDOM from 'react-dom';

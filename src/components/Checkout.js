@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Cookies from 'js-cookie';
-import time from '../stringDate';
+import {time} from '../stringDate';
 import CheckoutForm from './CheckoutForm';
 import $ from 'jquery';
 import server from '../fetchServer';

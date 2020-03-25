@@ -8,7 +8,7 @@ export default class Day extends Component {
 
         this.state = {
             events: props.events.map(event => {
-                return <Event key={uuid()} event={event} eventHandler={props.eventHandler} />
+                return <Event key={uuid()} event={event} eventHandler={props.eventHandler} managed={props.managed} />
             }),
             date: new Date(props.date)
         };

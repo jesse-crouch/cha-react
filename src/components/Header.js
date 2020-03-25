@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import server from '../fetchServer';
 import $ from 'jquery';
-import time from '../stringDate';
 
 export default class Header extends Component {
     componentDidMount() {
@@ -34,28 +33,7 @@ export default class Header extends Component {
         if (document.getElementById('headerLogin').innerHTML === 'Login') {
             window.location.replace('/login');
         } else {
-            //window.location.replace('/account');
-            var items = [];
-            var cartItems = Cookies.getJSON('cart').items;
-            for (var i in cartItems) {
-                var item = { event_name: cartItems[i].event_name };
-
-                var start = new Date(cartItems[i].epoch_date*1000);
-                var end = new Date(start.getTime());
-                end.setMinutes(end.getMinutes() + (60*cartItems[i].duration));
-                item.time = time(start) + ' - ' + time(end);
-
-                item.price = cartItems[i].price;
-                items.push(item);
-            }
-            console.log(items);
-
-            $.post(server + '/api/testEmail', {
-                email: 'xycrouchwb@gmail.com',
-                first_name: 'Jesse',
-                last_name: 'Crouch',
-                items: JSON.stringify(items)
-            });
+            window.location.replace('/account');
         }
     }
 

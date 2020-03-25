@@ -28,6 +28,12 @@ export default class CheckoutForm extends Component {
                             clientSecret: prevState.clientSecret,
                             payload: result.payload         
                         };
+                    }, () => {
+                        // Hide the stripe payment fields if the total is $0 (stripe can't process free stuff)
+                        // Display or hide the stripe form
+                        document.getElementById('paymentForm').style.display = props.amount === 0 ? 'none' : '';
+                        document.getElementById('paySubmitBtn').style.display = props.amount === 0 ? '' : 'none';
+                        document.getElementById('payCheckDiv').style.display = props.amount === 0 ? 'none' : '';
                     });
                 });
             }
@@ -175,7 +181,7 @@ export default class CheckoutForm extends Component {
                                 <label>Is this booking for a minor?</label>
                                 <input id="minorCheck" type="checkbox" style={{marginLeft: '0.5em', verticalAlign: '-0.3em'}} onClick={(e) => this.handleMinorCheck(e)} />
                             </div>
-                            <div className="form-group col-md-6 text-center">
+                            <div className="form-group col-md-6 text-center" id="payCheckDiv">
                                 <label>Are you paying in person?</label>
                                 <input id="payCheck" type="checkbox" style={{marginLeft: '0.5em', verticalAlign: '-0.3em'}} onClick={(e) => this.handlePayCheck(e)} />
                             </div>

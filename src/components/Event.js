@@ -1,5 +1,5 @@
 import React from 'react'
-import time from '../stringDate';
+import {time} from'../stringDate';
 import Cookies from 'js-cookie';
 
 export default function Event(props) {
@@ -43,11 +43,14 @@ export default function Event(props) {
 
     if (props.event.name === 'Class Scheduled') {
         className = 'event btn btn-dark my-1';
-        disabled = true;
+        disabled = true
+    }
+    if (props.managed) {
+        className = 'event btn btn-dark my-1';
     }
 
     return (
-        <button id={props.event.id + 'b'} className={className} style={{height: height, display: display}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
+        <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: props.managed ? props.event.colour : ''}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
             {time(start) + ' - ' + time(end)}
         </button>
     )

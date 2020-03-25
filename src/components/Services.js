@@ -17,26 +17,31 @@ export default class Services extends Component {
     }
 
     handleClick(service) {
-        if (service.cart) {
-            // Add this event straight to the cart
-            $.post(server + '/api/getEvent', { id: service.id }, result => {
-                addToCart(result.event, true);
-            });
-        } else {
-            $.post(server + '/api/getServices', { id: service.id }, result => {
-                if (result.services.length > 0) {
-                    // Populate the next chain of services
-                    this.setState({
-                        services: result.services.map(service => {
-                            return <Service key={uuid()} handleClick={this.handleClick} service={service} />;
-                        })
-                    });
-                } else {
-                    // Direct to calendar
-                    window.location.replace('/calendar?s=' + service.id);
-                }
-            });
-        }
+        document.getElementById('services-page').style.opacity = 0;
+        setTimeout(() => {
+            if (service.cart) {
+                // Add this event straight to the cart
+                $.post(server + '/api/getEvent', { id: service.id }, result => {
+                    addToCart(result.event, true);
+                });
+            } else {
+                $.post(server + '/api/getServices', { id: service.id }, result => {
+                    if (result.services.length > 0) {
+                        // Populate the next chain of services
+                        this.setState({
+                            services: result.services.map(service => {
+                                return <Service key={uuid()} handleClick={this.handleClick} service={service} />;
+                            })
+                        }, () => {
+                            document.getElementById('services-page').style.opacity = 1;
+                        });
+                    } else {
+                        // Direct to calendar
+                        window.location.replace('/calendar?s=' + service.id);
+                    }
+                });
+            }
+        }, 500);
     }
 
     componentDidMount() {
@@ -65,7 +70,7 @@ export default class Services extends Component {
 
     render() {
         return (
-            <div id="services-page">
+            <div id="services-page" style={{transition: 'all 0.5s'}}>
                 <h1>Our Services</h1>
                 <h5>Scroll through the services offered at Cosgrove Hockey Academy!</h5>
                 <h5>Click on any service for more information and to see available spots.</h5>

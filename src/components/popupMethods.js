@@ -1,14 +1,20 @@
-import time from "../stringDate";
+import {time} from"../stringDate";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import { addToCart, toggleCart } from "./cartMethods";
+import { toggleCart } from "./cartMethods";
 import monthNames from "../months";
 import server from "../fetchServer";
 
 function removeContent() {
     var popup = document.getElementById('popup');
     ReactDOM.unmountComponentAtNode(popup.children[1]);
+
+    // Remove any extra buttons from the footer
+    var footer = document.getElementById('popup-footer');
+    while(footer.childElementCount > 1) {
+        footer.removeChild(footer.children[0]);
+    }
 }
 
 export function togglePopup(enable) {
@@ -16,8 +22,10 @@ export function togglePopup(enable) {
         var footer = document.getElementById('popup-footer');
         var addBtn = document.getElementById('addBtn');
         var addEventBtn = document.getElementById('addEventBtn');
-        if (addBtn) { footer.removeChild(document.getElementById('addBtn')); }
-        if (addEventBtn) { footer.removeChild(document.getElementById('addEventBtn')); }
+        var deleteBtn = document.getElementById('deleteEventBtn');
+        if (addBtn) { footer.removeChild(addBtn); }
+        if (addEventBtn) { footer.removeChild(addEventBtn); }
+        if (deleteBtn) { footer.removeChild(deleteBtn); }
     } else {
         if (document.getElementById('cart-container').style.visibility === 'visible') {
             toggleCart();
@@ -35,6 +43,15 @@ export function setPopupContent(title, content) {
     removeContent();
     var text = <p>{content}</p>;
     ReactDOM.render(text, popup.children[1]);
+}
+
+export function setDOMContent(title, content) {
+    var popup = document.getElementById('popup');
+    popup.children[0].innerHTML = title;
+    removeContent();
+
+    var popupContent = document.getElementById('popup-content');
+    popupContent.appendChild(content);
 }
 
 export function setHTMLContent(title, content, width = '', button = false) {
@@ -168,7 +185,7 @@ export function setHTMLContent(title, content, width = '', button = false) {
     }
 }
 
-export function setEventContent(event) {
+export function setEventContent(event, popupButtons) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = event.name;
     removeContent();
@@ -197,33 +214,14 @@ export function setEventContent(event) {
         </div>
     </>
     
-    // Add an add to cart button to the popup, or delete if managed
-    var addBtn = document.createElement('button');
-    if (event.managed) {
-        addBtn.id = 'deleteEventBtn';
-        addBtn.onclick = () => {
-            // TODO
-        };
-        addBtn.innerHTML = 'Delete';
-        addBtn.className = 'btn btn-danger';
-        addBtn.style.float = 'left';
-    } else {
-        addBtn.id = 'addBtn';
-        addBtn.onclick = () => {
-            document.getElementById('popup-footer').removeChild(addBtn);
-            addToCart(event, true);
-            var button = document.getElementById(event.id + 'b');
-            if (button) {
-                button.style.background = 'green';
-                button.disabled = true;
-            }
-        };
-        addBtn.className = 'btn btn-primary';
-        addBtn.style.float = 'left';
-        addBtn.innerHTML = 'Add to Cart';
+    for (var i in popupButtons) {
+        addButton(popupButtons[i]);
     }
-    var closeBtn = document.getElementById('popupCloseBtn');
-    document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
 
     ReactDOM.render(content, popup.children[1]);
+}
+
+function addButton(button) {
+    var closeBtn = document.getElementById('popupCloseBtn');
+    document.getElementById('popup-footer').insertBefore(button, closeBtn);
 }

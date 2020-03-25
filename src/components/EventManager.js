@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import monthNames from '../months';
 import server from '../fetchServer';
-import { setEventContent, togglePopup, setHTMLContent } from './popupMethods';
+import { setEventContent, togglePopup, setDOMContent, setHTMLContent, setPopupContent } from './popupMethods';
 import $ from 'jquery';
 import Day from './Day';
 import { uuid } from 'uuidv4';
-import time from '../stringDate';
+import {time} from'../stringDate';
 
 export default class EventManager extends Component {
     constructor() {
@@ -16,11 +16,60 @@ export default class EventManager extends Component {
         };
 
         this.updateWeek = this.updateWeek.bind(this);
+        this.handleEventClick = this.handleEventClick.bind(this);
+    }
+
+    handleDelete(singleEvent, startEvent) {
+        togglePopup(false);
+        setTimeout(() => {
+            $.post(server + '/api/deleteEvents', { singleEvent: singleEvent, startEvent: JSON.stringify(startEvent) }, result => {
+                if (result.error) {
+                    setPopupContent('Error', result.error);
+                    togglePopup(true);
+                } else {
+                    setPopupContent('Success', 'The ' + (singleEvent ? 'event' : 'recurrence') + ' was successfully deleted. Refreshing shortly...');
+                    togglePopup(true);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }
+            });
+        }, 200);
     }
 
     handleEventClick(event) {
         event.managed = true;
-        setEventContent(event);
+        
+        // Delete buttons to add to the popup
+        var deleteSingleBtn = document.createElement('button');
+        deleteSingleBtn.id = 'deleteSingleBtn';
+        deleteSingleBtn.onclick = () => {
+            var buttonDiv = document.createElement('div');
+            var singleDeleteBtn = document.createElement('button');
+            var multiDeleteBtn = document.createElement('button');
+
+            singleDeleteBtn.innerHTML = 'Delete This Event';
+            multiDeleteBtn.innerHTML = 'Delete This Recurrence';
+
+            singleDeleteBtn.className = 'btn btn-danger mr-2 mb-2';
+            multiDeleteBtn.className = 'btn btn-danger mr-2 mb-2';
+
+            singleDeleteBtn.onclick = () => { this.handleDelete(true, event); };
+            multiDeleteBtn.onclick = () => { this.handleDelete(false, event); };
+            buttonDiv.appendChild(singleDeleteBtn);
+            buttonDiv.appendChild(multiDeleteBtn);
+
+            togglePopup(false);
+            setTimeout(() => {
+                setDOMContent('Delete', buttonDiv);
+                togglePopup(true);
+            }, 200);
+        };
+        deleteSingleBtn.innerHTML = 'Delete';
+        deleteSingleBtn.className = 'btn btn-danger';
+        deleteSingleBtn.style.float = 'left';
+
+        setEventContent(event, [deleteSingleBtn]);
         togglePopup(true);
     }
 
@@ -53,7 +102,6 @@ export default class EventManager extends Component {
                         events.push(result.events[j]);
                     }
                 }
-                console.log(date.toUTCString());
                 days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={true} />);
                 date.setDate(date.getDate() + 1);
             }

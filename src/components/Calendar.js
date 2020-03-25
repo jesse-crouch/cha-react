@@ -5,10 +5,12 @@ import Day from './Day';
 import { uuid } from 'uuidv4';
 import { togglePopup, setPopupContent, setEventContent } from './popupMethods';
 import monthNames from '../months';
+import { addToCart } from './cartMethods';
 
 export default class Calendar extends Component {
     constructor(props) {
         super();
+
         this.state = {
             currentDate: new Date(),
             service: props.id,
@@ -28,6 +30,7 @@ export default class Calendar extends Component {
             id: this.props.id,
             date: this.state.currentDate.getTime()/1000
         }, (result) => {
+            console.log(result);
             if (result.error) {
                 setPopupContent('No Classes', result.error);
                 togglePopup(true);
@@ -130,7 +133,25 @@ export default class Calendar extends Component {
 
     handleEventClick(event) {
         event.managed = false;
-        setEventContent(event);
+
+        // Add to cart button to add to the popup
+        // Add an add to cart button to the popup, or delete if managed
+        var addBtn = document.createElement('button');
+        addBtn.id = 'addBtn';
+        addBtn.onclick = () => {
+            document.getElementById('popup-footer').removeChild(addBtn);
+            addToCart(event, true);
+            var button = document.getElementById(event.id + 'b');
+            if (button) {
+                button.style.background = 'green';
+                button.disabled = true;
+            }
+        };
+        addBtn.className = 'btn btn-primary';
+        addBtn.style.float = 'left';
+        addBtn.innerHTML = 'Add to Cart';
+
+        setEventContent(event, [addBtn]);
         togglePopup(true);
     }
 
