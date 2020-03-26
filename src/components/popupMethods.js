@@ -54,6 +54,15 @@ export function setDOMContent(title, content) {
     popupContent.appendChild(content);
 }
 
+export function setReactContent(title, content) {
+    var popup = document.getElementById('popup');
+    popup.children[0].innerHTML = title;
+    removeContent();
+
+    var popupContent = document.getElementById('popup-content');
+    ReactDOM.render(content, popupContent);
+}
+
 export function setHTMLContent(title, content, width = '', button = false) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;

@@ -269,3 +269,8 @@ html {
   font-size: 135%;
   left: 5%;
 }
+
+.reception-form {
+  width: 60%;
+  margin: 0 auto;
+}

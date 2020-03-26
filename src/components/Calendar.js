@@ -62,7 +62,7 @@ export default class Calendar extends Component {
                         // Adding ghost events for open services
                         // Business hours - Weekdays (4 PM - 9 PM), Weekends (8 AM - 9 PM)
                         const open_time = (i === 0 || i === 6) ? 16 : 8;
-                        const close_time = 21;
+                        const close_time = 23;
 
                         var trackDate = new Date(date.getTime());
                         trackDate.setUTCHours(open_time,0,0,0);

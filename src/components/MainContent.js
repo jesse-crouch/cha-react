@@ -6,6 +6,7 @@ import Checkout from './Checkout';
 import Login from './Login';
 import Account from './Account';
 import EventManager from './EventManager';
+import Reception from './Reception';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -47,6 +48,12 @@ export default class MainContent extends Component {
             return (
                 <div id="main">
                     <Account />
+                </div>
+            );
+        } else if (url.includes('reception')) {
+            return (
+                <div id="main">
+                    <Reception />
                 </div>
             );
         } else if (url.includes('event-manager')) {

@@ -10,7 +10,7 @@ export default function Event(props) {
 
     // Check if this event is in the past
     var display = '';
-    if (start.getTime() < new Date().getTime()) {
+    if (start.getTime() < (new Date().getTime() - (1000*60*60*4))) {
         display = 'none';
     }
 
