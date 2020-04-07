@@ -1,3 +1,5 @@
+import monthNames from "./months";
+
 export function time(date) {
     var hours = date.getUTCHours();
     var mins = date.getUTCMinutes();
@@ -19,4 +21,22 @@ export function date(date) {
     if (month < 10) { month = '0' + month; }
     
     return day + '/' + month + '/' + year;
+}
+
+export function shortDate(date) {
+    // Month DD
+    var day = date.getUTCDate();
+    var month = monthNames[date.getUTCMonth()];
+
+    if (day === 1) {
+        day = day + 'st';
+    } else if (day === 2) {
+        day = day + 'nd';
+    } else if (day === 3) {
+        day = day + 'rd';
+    } else {
+        day = day + 'th';
+    }
+    
+    return month + ' ' + day;
 }

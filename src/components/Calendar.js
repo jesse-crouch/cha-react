@@ -38,7 +38,7 @@ export default class Calendar extends Component {
                     window.location.replace('/services');
                 }, 3000);
             } else {
-                console.log(result.resourceConflicts);
+                console.log(result);
                 var days = [];
                 var flaggedTimes = [];
                 var date = new Date(result.startDate);
@@ -62,7 +62,7 @@ export default class Calendar extends Component {
                         // Adding ghost events for open services
                         // Business hours - Weekdays (4 PM - 9 PM), Weekends (8 AM - 9 PM)
                         const open_time = (i === 0 || i === 6) ? 16 : 8;
-                        const close_time = 23;
+                        const close_time = 21;
 
                         var trackDate = new Date(date.getTime());
                         trackDate.setUTCHours(open_time,0,0,0);
@@ -96,7 +96,10 @@ export default class Calendar extends Component {
                             }
 
                             trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
-                            events.push(event);
+                            // Check that this event won't exceed the closing time
+                            if (trackDate.getUTCHours() < close_time) {
+                                events.push(event);
+                            }
                             eventNum++;
                         }
                     }
@@ -104,6 +107,7 @@ export default class Calendar extends Component {
                     days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={false} />);
                     date.setDate(date.getDate() + 1);
                 }
+                console.log(events);
                 date.setDate(date.getDate()-7);
                 this.setState(prevState => {
                     return {

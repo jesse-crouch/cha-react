@@ -22,28 +22,32 @@ export default function PaymentForm(props) {
     }
 
     // Check for entered fields on checkout form
-    var chargeCard = true;
     var firstNameField = document.getElementById('firstNameField');
     var lastNameField = document.getElementById('lastNameField');
     var phoneField = document.getElementById('phoneField');
     var emailField = document.getElementById('emailField');
     var minorCheck = document.getElementById('minorCheck');
-    if (firstNameField.value.length === 0) {
-        firstNameField.style.border = '2px solid red';
-        chargeCard = false;
+
+    var chargeCard = true;
+    if (!Cookies.get('token')) {            
+        if (firstNameField.value.length === 0) {
+            firstNameField.style.border = '2px solid red';
+            chargeCard = false;
+        }
+        if (lastNameField.value.length === 0) {
+            lastNameField.style.border = '2px solid red';
+            chargeCard = false;
+        }
+        if (phoneField.value.length === 0) {
+            phoneField.style.border = '2px solid red';
+            chargeCard = false;
+        }
+        if (emailField.value.length === 0) {
+            emailField.style.border = '2px solid red';
+            chargeCard = false;
+        }
     }
-    if (lastNameField.value.length === 0) {
-        lastNameField.style.border = '2px solid red';
-        chargeCard = false;
-    }
-    if (phoneField.value.length === 0) {
-        phoneField.style.border = '2px solid red';
-        chargeCard = false;
-    }
-    if (emailField.value.length === 0) {
-        emailField.style.border = '2px solid red';
-        chargeCard = false;
-    }
+
     if (minorCheck.checked) {
         var childFirstNameField = document.getElementById('childFirstNameField');
         var childLastNameField = document.getElementById('childLastNameField');
@@ -58,6 +62,7 @@ export default function PaymentForm(props) {
     }
 
     if (chargeCard) {
+        alert('Charging..');
         const result = await stripe.confirmCardPayment(props.clientSecret, {
         payment_method: {
             card: elements.getElement(CardElement),
@@ -80,15 +85,6 @@ export default function PaymentForm(props) {
                 // execution. Set up a webhook or plugin to listen for the
                 // payment_intent.succeeded event that handles any business critical
                 // post-payment actions.
-                // Assemble the item ids
-                var itemIDs = [];
-                var items = Cookies.getJSON('cart').items;
-                for (var i in items) {
-                    var item = {};
-                    item.id = items[i].id;
-                    item.date = items[i].epoch_date;
-                    itemIDs.push(item);
-                }
 
                 // Get payload info
                 $.post(server + '/api/getPayload', { token: Cookies.get('token') }, payloadResult => {
@@ -96,14 +92,14 @@ export default function PaymentForm(props) {
                     
                     var token = Cookies.get('token');
                     var user_id = token ? payload.id : null;
-                    var first_name = token ? payload.last_name : firstNameField.value.toLowerCase();
+                    var first_name = token ? payload.first_name : firstNameField.value.toLowerCase();
                     var last_name = token ? payload.last_name : lastNameField.value.toLowerCase();
                     var email = token ? payload.email : emailField.value.toLowerCase();
                     var phone = token ? payload.phone : phoneField.value.toLowerCase();
                     var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : null;
                     var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : null;
 
-                    $.post(server + '/sale', {
+                    $.post(server + '/api/sale', {
                         user_id: user_id,
                         first_name: first_name,
                         last_name: last_name,
@@ -111,8 +107,8 @@ export default function PaymentForm(props) {
                         phone: phone,
                         child_first_name: child_first_name,
                         child_last_name: child_last_name,
-                        items: itemIDs,
-                        amount_due: 0,
+                        amount_due: props.amount,
+                        cart: Cookies.get('cart'),
                         free: document.getElementById('membershipRow') != null
                     }, result => {
                         if (!result.error) {
@@ -122,7 +118,6 @@ export default function PaymentForm(props) {
                             Cookies.remove('cart');
                             document.getElementById('submitBtn').style.display = 'none';
                             setTimeout(() => {
-                                togglePopup(false);
                                 window.location.replace('/services');
                             }, 3000);
                         } else {

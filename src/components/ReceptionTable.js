@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import { time } from '../stringDate';
+import server from '../fetchServer';
+import { setPopupContent, togglePopup } from './popupMethods';
+import $ from 'jquery';
 
 export default class ReceptionTable extends Component {
     constructor(props) {
@@ -8,6 +11,30 @@ export default class ReceptionTable extends Component {
         this.state = {
             bookings: props.bookings
         };
+    }
+
+    handleDelete(id) {
+        if (window.confirm('Are you sure?')) {
+            $.post(server + '/api/deleteBooking', { id: id }, result => {
+                if (!result.error) {
+                    togglePopup(false);
+                    setPopupContent('Success', 'Booking deleted, refreshing shortly...');
+                    togglePopup(true);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    togglePopup(false);
+                    setPopupContent('Error', result.error);
+                    togglePopup(true);
+                }
+            });
+        }
+    }
+
+    handlePaid(event, id) {
+        event.target.parentElement.parentElement.children[8].innerHTML = '0';
+        $.post(server + '/api/updatePaidBooking', { id: id });
     }
 
     bookingToRow(booking) {
@@ -24,6 +51,9 @@ export default class ReceptionTable extends Component {
             <td>{booking.child_last_name}</td>
             <td>{booking.fullServiceName}</td>
             <td>{time(start) + ' - ' + time(end)}</td>
+            <td>{booking.amount_due}</td>
+            <td><button className="btn btn-primary" onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
+            <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id)}>Delete</button></td>
         </tr>;
     }
 
@@ -44,6 +74,9 @@ export default class ReceptionTable extends Component {
                         <th>Child Last Name</th>
                         <th>Service</th>
                         <th>Time</th>
+                        <th>Amount Due</th>
+                        <th>Is Paid?</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody id="reception-body">{bookingRows}</tbody>

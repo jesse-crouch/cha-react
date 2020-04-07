@@ -1,10 +1,11 @@
 import Cookies from 'js-cookie';
-import {time} from "../stringDate";
+import {time, shortDate} from "../stringDate";
 import { togglePopup } from './popupMethods';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import { FaArrowRight, FaShoppingCart } from 'react-icons/fa';
+import server from '../fetchServer';
 
 export function toggleEmpty(isEmpty) {
     document.getElementById('emptyMsg').style.display = isEmpty ? '' : 'none';
@@ -38,6 +39,20 @@ export function toggleCart() {
     }
 }
 
+export function addSpecialToCart(service) {
+    var eventID = null;
+    if (service === 39) eventID = 176;
+    if (service === 40) eventID = 177;
+    if (service === 41) eventID = 178;
+    if (service === 42) eventID = 179;
+
+    if (eventID) {
+        $.post(server + '/api/getEvent', { id: eventID }, result => {
+            if (!result.error) addToCart(result.event, true);
+        });
+    }
+}
+
 export function addToCart(event, refresh) {
     var cartBody = document.getElementById('cart-table');
     var newRow = document.createElement('tr');
@@ -49,10 +64,23 @@ export function addToCart(event, refresh) {
     var removeRow = document.createElement('td');
 
     nameRow.innerHTML = event.name;
-    var start = new Date(event.epoch_date*1000);
-    var end = new Date(start.getTime());
-    end.setMinutes(end.getMinutes() + (60*event.duration));
-    timeRow.innerHTML = time(start) + ' - ' + time(end);
+
+    // Handle event times
+    var eventStart = new Date(event.epoch_date*1000);
+    var eventEnd = new Date(eventStart.getTime());
+    if (event.duration > 100 && event.duration < 200) {
+        // Event spans multiple days
+        eventEnd.setDate(eventEnd.getDate() + 70);
+        timeRow.innerHTML = shortDate(eventStart) + ' - ' + shortDate(eventEnd);
+    } else if (event.duration > 200) {
+        // Event spans multiple weeks
+        eventEnd.setDate(eventEnd.getDate() + ((event.duration - 201)*7));
+        timeRow.innerHTML = shortDate(eventStart) + ' - ' + shortDate(eventEnd);
+    } else {
+        // Event spans multiple minutes or hours
+        eventEnd.setMinutes(eventEnd.getMinutes() + (event.duration*60));
+        timeRow.innerHTML = time(eventStart) + ' - ' + time(eventEnd);
+    }
     var priceIndex = event.price.indexOf('/');
     var price = Number.parseFloat(event.price.substr(0, priceIndex));
     priceRow.innerHTML = price.toFixed(2);

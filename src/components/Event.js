@@ -46,6 +46,7 @@ export default function Event(props) {
         disabled = true
     }
     if (props.managed) {
+        disabled = false;
         className = 'event btn btn-dark my-1';
     }
 

@@ -33,6 +33,7 @@ export function togglePopup(enable) {
     }
 
     var popup = document.getElementById('popup');
+    if (!enable) { popup.style.width = ''; }
     var topValue = enable ? -50 : -(popup.clientHeight + 150);
     $('#popup').animate({top: topValue + 'px'}, 0);
 }
@@ -54,13 +55,14 @@ export function setDOMContent(title, content) {
     popupContent.appendChild(content);
 }
 
-export function setReactContent(title, content) {
+export function setReactContent(title, content, width = '') {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;
     removeContent();
 
     var popupContent = document.getElementById('popup-content');
     ReactDOM.render(content, popupContent);
+    popup.style.width = width;
 }
 
 export function setHTMLContent(title, content, width = '', button = false) {
@@ -181,7 +183,7 @@ export function setHTMLContent(title, content, width = '', button = false) {
                         togglePopup(true);
                         setTimeout(() => {
                             window.location.reload();
-                        }, 3000);
+                        }, 200);
                     }
                 });
             }
@@ -195,13 +197,14 @@ export function setHTMLContent(title, content, width = '', button = false) {
 }
 
 export function setEventContent(event, popupButtons) {
+    console.log(event);
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = event.name;
     removeContent();
     var start = new Date(event.epoch_date*1000);
     var end = new Date(start.getTime());
     end.setHours(end.getHours(), end.getMinutes() + (event.duration*60));    
-    var openSpots = (event.open_spots > 1) ? event.open_spots + ' Spots Remaining' : event.open_spots + ' Spot Remaining!';
+    var openSpots = (event.open_spots > 1) ? event.open_spots + ' Spots Remaining' : event.open_spots + ' Spot Remaining';
     var totalSpots = (event.total_spots > 1) ? event.total_spots + ' Spots in Total' : event.total_spots + ' Spot in Total';
 
     var content = <>
