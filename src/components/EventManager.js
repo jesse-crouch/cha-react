@@ -11,8 +11,10 @@ export default class EventManager extends Component {
     constructor() {
         super();
 
+        var currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() - currentDate.getDay());
         this.state = {
-            currentDate: new Date()
+            currentDate: currentDate
         };
 
         this.updateWeek = this.updateWeek.bind(this);
@@ -82,8 +84,9 @@ export default class EventManager extends Component {
         newDate.setDate(newDate.getDate() + (next ? 7 : -7));
         this.setState({
             currentDate: newDate
+        }, () => {
+            this.updateWeek();
         });
-        this.updateWeek();
     }
 
     updateWeek() {
@@ -108,10 +111,9 @@ export default class EventManager extends Component {
             this.setState({
                 currentDate: date,
                 days: days
-            });
-            setTimeout(() => {
+            }, () => {
                 document.getElementById('calendar').style.opacity = 1;
-            }, 200);
+            });
         });
     }
 

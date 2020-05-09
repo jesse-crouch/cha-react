@@ -101,6 +101,7 @@ export default function PaymentForm(props) {
 
                     $.post(server + '/api/sale', {
                         user_id: user_id,
+                        token: Cookies.get('token'),
                         first_name: first_name,
                         last_name: last_name,
                         email: email,

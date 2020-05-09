@@ -20,6 +20,7 @@ export default class Services extends Component {
     }
 
     handleClick(service) {
+        console.log(service.cart);
         if (!service.cart) document.getElementById('services-page').style.opacity = 0;
         setTimeout(() => {
             if (service.cart) {

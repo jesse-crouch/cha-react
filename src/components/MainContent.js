@@ -7,6 +7,13 @@ import Login from './Login';
 import Account from './Account';
 import EventManager from './EventManager';
 import Reception from './Reception';
+import Memberships from './Memberships';
+import EmployeeLogin from './EmployeeLogin';
+import Bookings from './Bookings';
+import Register from './Register';
+import PersonalInfo from './PersonalInfo';
+import EmployeeInfo from './EmployeeInfo';
+import Staging from './Staging';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -17,58 +24,45 @@ export default class MainContent extends Component {
     }
 
     render() {
-        const url = window.location.href;
+        const url = window.location.href.split(window.location.host)[1];
+        var content = <Home />;
 
-        if (url.includes('services')) {
-            return(
-                <div id="main">
-                    <Services />
-                </div>
-            );
-        } else if (url.includes('calendar')) {
-            const calendarID = new URL(url).searchParams.get('s');
-            return(
-                <div id="main">
-                    <Calendar id={calendarID} />
-                </div>
-            );
-        } else if (url.includes('checkout')) {
-            return (
-                <div id="main">
-                    <Checkout />
-                </div>
-            );
-        } else if (url.includes('login')) {
-            return (
-                <div id="main">
-                    <Login />
-                </div>
-            );
-        } else if (url.includes('account')) {
-            return (
-                <div id="main">
-                    <Account />
-                </div>
-            );
-        } else if (url.includes('reception')) {
-            return (
-                <div id="main">
-                    <Reception />
-                </div>
-            );
-        } else if (url.includes('event-manager')) {
-            return (
-                <div id="main">
-                    <EventManager />
-                </div>
-            );
-        } else {
-            return(
-                <div id="main">
-                    <Home />
-                </div>
-            );
+        if (url === '/services') {
+            content = <Services />;
+        } else if (url.includes('/calendar')) {
+            const calendarID = new URL(window.location.href).searchParams.get('s');
+            content = <Calendar id={calendarID} />;
+        } else if (url === '/checkout') {
+            content = <Checkout />;
+        } else if (url === '/login') {
+            content = <Login />;
+        } else if (url === '/account') {
+            content = <Account />;
+        } else if (url === '/reception') {
+            content = <Reception />;
+        } else if (url === '/event-manager') {
+            content = <EventManager />;
+        } else if (url === '/memberships') {
+            content = <Memberships />;
+        } else if (url === '/employees') {
+            content = <EmployeeLogin />;
+        } else if (url === '/bookings') {
+            content = <Bookings />;
+        } else if (url === '/register') {
+            content = <Register />;
+        } else if (url === '/personal-info') {
+            content = <PersonalInfo />;
+        } else if (url === '/employee-info') {
+            content = <EmployeeInfo />;
+        } else if (url === '/staging') {
+            content = <Staging />;
         }
+
+        return (
+            <div id="main">
+                {content}
+            </div>
+        );
     }
 }
 

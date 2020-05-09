@@ -25,6 +25,9 @@ export default class AddEvent extends Component {
                 var option = serviceSelect.options[serviceSelect.selectedIndex];
                 document.getElementById('newEventName').value = option.getAttribute('name');
                 document.getElementById('newEventSpots').value = option.getAttribute('spots');
+                document.getElementById('newEventMonth').value = monthNames[new Date().getUTCMonth()];
+                document.getElementById('newEventInterval').value = 'Hours';
+                document.getElementById('newEventDuration').value = '1';
             };
 
             // Populate instructor select
@@ -83,13 +86,24 @@ export default class AddEvent extends Component {
                 startSelect.appendChild(newOption);
             }
 
+            // Populate duration interval select
+            var intervalSelect = document.getElementById('newEventInterval');
+            var intervals = ['Hours', 'Days', 'Weeks'];
+            // eslint-disable-next-line
+            for (var i in intervals) {
+                // eslint-disable-next-line
+                var newOption = document.createElement('option');
+                newOption.innerHTML = intervals[i];
+                intervalSelect.appendChild(newOption);
+            }
+
             // Populate duration select
             var durationSelect = document.getElementById('newEventDuration');
             // eslint-disable-next-line
-            for (var i=0; i<9; i++) {
+            for (var i=0; i<10; i++) {
                 // eslint-disable-next-line
                 var newOption = document.createElement('option');
-                newOption.innerHTML = (i === 0) ? '30 Minutes' : (i === 1) ? i + ' Hour' : i + ' Hours';
+                newOption.innerHTML = i+1;
                 durationSelect.appendChild(newOption);
             }
         });
@@ -110,11 +124,13 @@ export default class AddEvent extends Component {
             var daySelect = document.getElementById('newEventDay');
             var yearSelect = document.getElementById('newEventYear');
             var startSelect = document.getElementById('newEventStart');
+            var intervalSelect = document.getElementById('newEventInterval');
             var durationSelect = document.getElementById('newEventDuration');
 
             var service = serviceSelect.options[serviceSelect.selectedIndex].getAttribute('id');
             var instructor = instructorSelect.options[instructorSelect.selectedIndex].getAttribute('id');
             var duration = durationSelect.options[durationSelect.selectedIndex].value;
+            var interval = intervalSelect.options[intervalSelect.selectedIndex].value;
             var start = startSelect.options[startSelect.selectedIndex].getAttribute('timeInfo');
 
             var month = monthNames.indexOf(monthSelect.options[monthSelect.selectedIndex].value);
@@ -155,6 +171,10 @@ export default class AddEvent extends Component {
                 validData = false;
                 durationSelect.style.border = '2px solid red';
             }
+            if (interval.includes('Choose')) {
+                validData = false;
+                intervalSelect.style.border = '2px solid red';
+            }
             if (isNaN(parseInt(spots))) {
                 validData = false;
                 spotsField.style.border = '2px solid red';
@@ -162,18 +182,12 @@ export default class AddEvent extends Component {
             if (validData) {
                 togglePopup(false);
                 setTimeout(() => {
-                    setPopupContent('Adding event...', '');
+                    setPopupContent('Loading...', 'Adding event, please wait.');
                     togglePopup(true);
                 }, 500);
 
                 //document.getElementById('popup-footer').removeChild(addBtn);
                 var timeInfo = start.split(',');
-                var durationNum = duration.split(' ')[0];
-                if (duration.split(' ')[1].includes('Hour')) {
-                    durationNum *= 60;
-                } else {
-                    durationNum = 30;
-                }
                 var date = new Date(Date.UTC(year, month, day, timeInfo[0], timeInfo[1],0,0));
 
                 // Check for recurrence
@@ -196,8 +210,9 @@ export default class AddEvent extends Component {
                     service: service,
                     spots: spots,
                     date: date.getTime()/1000,
-                    duration: durationNum,
-                    days: JSON.stringify(days)
+                    duration: duration,
+                    durationInterval: interval,
+                    days: days.length > 0 ? JSON.stringify(days) : 'null'
                 }, result => {
                     if (result.error) {
                         togglePopup(false);
@@ -240,14 +255,20 @@ export default class AddEvent extends Component {
                         </div>
                     </div>
                     <div className="form-row">
-                        <div className="form-group col-md-6">
+                        <div className="form-group col-md-4">
                             <label>Total Spots</label>
                             <input className="form-control" id="newEventSpots" />
                         </div>
-                        <div className="form-group col-md-6">
+                        <div className="form-group col-md-4">
                             <label>Instructor</label>
                             <select className="form-control" id="newEventInstructor">
                                 <option>Choose an instructor</option>
+                            </select>
+                        </div>
+                        <div className="form-group col-md-4">
+                            <label>Start</label>
+                            <select className="form-control" id="newEventStart">
+                                <option>Choose a start time</option>
                             </select>
                         </div>
                     </div>
@@ -273,9 +294,9 @@ export default class AddEvent extends Component {
                     </div>
                     <div className="form-row">
                         <div className="form-group col-md-4">
-                            <label>Start</label>
-                            <select className="form-control" id="newEventStart">
-                                <option>Choose a start time</option>
+                            <label>Duration Interval</label>
+                            <select className="form-control" id="newEventInterval">
+                                <option>Choose an interval</option>
                             </select>
                         </div>
                         <div className="form-group col-md-4">

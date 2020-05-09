@@ -5,7 +5,7 @@
 
 #page {
   font-family: noir;
-  background: #cccccc;
+  background: #e6e6e6;
 }
 
 body {
@@ -13,11 +13,11 @@ body {
 }
 
 html {
-  background: #cccccc;
+  background: #e6e6e6;
 }
 
 #main {
-  background: #cccccc;
+  background: #e6e6e6;
   position: absolute;
   width: 100%;
 }
@@ -31,9 +31,36 @@ html {
   font-weight: bold;
 }
 
+.user-action.card {
+  border: 1px solid black;
+  margin: 2%;
+  padding: 1%;
+  transition: all 0.5s;
+  min-width: 40%;
+}
+
+.user-action.card svg {
+  margin: 2% auto 6% auto;
+  font-size: 3em;
+}
+
+.user-action.card h2 {
+  border-bottom: 1px solid #cccccc;
+}
+
+.user-action.card:hover {
+  background: #cccccc;
+}
+
+.user-actions.card-deck {
+  justify-content: space-around;
+  width: 60%;
+  margin: 0 auto;
+}
+
 #services {
   display: flex;
-  background: #cccccc;
+  background: #e6e6e6;
   flex-flow: wrap;
   justify-content: space-evenly;
 }
@@ -48,6 +75,26 @@ html {
   position: relative;
   padding: 1%;
   transition: all 0.5s;
+}
+
+.service-highlight {
+  background-color: rgb(0,0,139);
+  position: absolute;
+  top: -32px;
+  left: -8px;
+  width: 105%;
+  padding: 1%;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+  color: white;
+}
+
+.service-footer {
+  border-top: 1px solid gray;
+  padding: 5%;
+  bottom: 0;
+  position: absolute;
+  width: 90%;
 }
 
 .service:hover {
@@ -94,7 +141,7 @@ html {
 }
 
 #services-page {
-  background: #cccccc;
+  background: #e6e6e6;
   text-align: center;
 }
 
@@ -232,7 +279,8 @@ html {
   }
 
   #cart {
-    width: 80%;
+    width: 100%;
+    font-size: 0.75em;
   }
 
   #cartBtn {
@@ -270,7 +318,47 @@ html {
   left: 5%;
 }
 
+#reception-div {
+  text-align: center;
+}
+
 .reception-form {
   width: 60%;
+  margin: 0 auto;
+}
+
+.carousel-container {
+  display: inline-block;
+}
+
+.carousel {
+  width: 30%;
+  display: inline-block;
+  border: 10px solid black;
+  border-radius: 5px;
+  margin: 3em 10%;
+}
+
+#bannerTitle {
+  color: white;
+  font-size: 3rem;
+}
+
+#bannerSubtitle {
+  color: white;
+  font-size: 2rem;
+}
+
+.separator {
+  background: red;
+  height: 2vh;
+}
+
+#navbarTogglerDemo01 {
+  padding: 1%;
+}
+
+.personal-info {
+  width: 75%;
   margin: 0 auto;
 }

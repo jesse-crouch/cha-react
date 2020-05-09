@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import {time, shortDate} from "../stringDate";
-import { togglePopup } from './popupMethods';
+import { togglePopup, setPopupContent } from './popupMethods';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
@@ -50,6 +50,108 @@ export function addSpecialToCart(service) {
         $.post(server + '/api/getEvent', { id: eventID }, result => {
             if (!result.error) addToCart(result.event, true);
         });
+    }
+}
+
+export function addNonEventToCart(event, userAdded) {
+    // Check that the cart doesn't already contain a membership product
+    var cart = Cookies.getJSON('cart');
+    var notAdded = true;
+    if (userAdded) {
+        if (cart) {
+            for (var i in cart.items) {
+                if (cart.items[i].eventType === 'membership') {
+                    togglePopup(false);
+                    setPopupContent('Error', 'You already have a membership change added to the cart. Please remove it first if you wish to add a different one.');
+                    togglePopup(true);
+                    notAdded = false;
+                } else {
+                    notAdded = true;
+                }
+            }
+        }
+    }
+
+    if (notAdded) {
+        var cartBody = document.getElementById('cart-table');
+        var newRow = document.createElement('tr');
+        newRow.id = event.id + 'r';
+        event.type = 'nonevent';
+        event.eventType = 'membership';
+
+        var nameRow = document.createElement('td');
+        var timeRow = document.createElement('td');
+        var priceRow = document.createElement('td');
+        var removeRow = document.createElement('td');
+
+        
+        timeRow.innerHTML = '';
+        if (event.cancel) {
+            nameRow.innerHTML = 'Cancel Membership';
+            priceRow.innerHTML = '0.00';
+            event.cancelling = true;
+        } else {
+            nameRow.innerHTML = 'Membership - ' + event.name;
+            var price = parseInt(event.price.split('/')[0]);
+            if (event.name === 'Yearly') {
+                price *= 12;
+            } else if (event.name === '6 Monthly') {
+                price *= 6;
+            }
+            priceRow.innerHTML = price + '.00';
+        }
+
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-outline-danger';
+        removeBtn.innerHTML = 'x';
+        removeBtn.onclick = () => {
+            // Remove the row from the cart table, change the event button back, and remove from cart cookie
+            cartBody.removeChild(newRow);
+            var eventBtn = document.getElementById(event.id + 'b');
+            if (eventBtn) {
+                eventBtn.style.background = '#007bff';
+                eventBtn.disabled = false;
+            }
+            var cart = Cookies.getJSON('cart');
+            if (cart.items.length === 1) {
+                Cookies.remove('cart');
+                toggleCart();
+            } else {
+                for (var i in cart.items) {
+                    if (cart.items[i].id === event.id) {
+                        cart.items.splice(i,1);
+                        Cookies.set('cart', { items: cart.items });
+                    }
+                }
+            }
+        }
+        removeRow.appendChild(removeBtn);
+
+        newRow.appendChild(nameRow);
+        newRow.appendChild(timeRow);
+        newRow.appendChild(priceRow);
+        newRow.appendChild(removeRow);
+
+        cartBody.appendChild(newRow);
+
+        if (userAdded) {
+            if (cart) {
+                // Cart exists, append new item
+                cart.items.push(event);
+                Cookies.set('cart', { items: cart.items });
+
+                console.log(Cookies.getJSON('cart'));
+            } else {
+                var items = [];
+                items.push(event);
+                Cookies.set('cart', { items: items });
+
+                console.log(Cookies.getJSON('cart'));
+            }
+            // Close the popup and open the cart
+            togglePopup(false);
+            toggleCart();
+        }
     }
 }
 

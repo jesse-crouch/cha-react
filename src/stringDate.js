@@ -14,7 +14,7 @@ export function time(date) {
 export function date(date) {
     // DD/MM/YYYY
     var day = date.getUTCDate();
-    var month = date.getUTCMonth();
+    var month = date.getUTCMonth() + 1;
     var year = date.getUTCFullYear();
 
     if (day < 10) { day = '0' + day; }

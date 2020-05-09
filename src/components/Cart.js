@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { addToCart } from './cartMethods';
+import { addToCart, addNonEventToCart, toggleCart } from './cartMethods';
 import Cookies from 'js-cookie';
 
 export default class Cart extends Component {
@@ -9,7 +9,24 @@ export default class Cart extends Component {
         if (cart) {
             for (var i in cart.items) {
                 var row = document.getElementById(cart.items[i].id + 'r');
-                if (!row) { addToCart(cart.items[i], false); }
+                console.log(row);
+                if (cart.items[i].type === 'nonevent') {
+                    if (row === null) {
+                        if (Cookies.get('token') !== undefined) {
+                            addNonEventToCart(cart.items[i], false);
+                        } else {
+                            if (cart.items.length === 1) {
+                                Cookies.remove('cart');
+                                toggleCart(true);
+                            } else {
+                                cart.items.splice(i,1);
+                                Cookies.set('cart', { items: cart.items });
+                            }
+                        }
+                    }
+                } else {
+                    if (row === null) { addToCart(cart.items[i], false); }
+                }
             }
         }
     }

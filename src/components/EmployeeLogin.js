@@ -8,7 +8,7 @@ export default class Login extends Component {
     login() {
         var token = Cookies.get('token');
         if (!token) {
-            $.post(server + '/api/login', {
+            $.post(server + '/api/employeeLogin', {
                 email: document.getElementById('loginEmail').value,
                 pass: document.getElementById('loginPassword').value
             }, result => {
@@ -18,7 +18,15 @@ export default class Login extends Component {
                         togglePopup(true);
                     } else {
                         Cookies.set('token', result.token, { expires: 3 });
-                        window.location.replace('/');
+                        // Check for special logins and redirect as necessary
+                        var email = document.getElementById('loginEmail').value;
+                        if (email === 'reception') {
+                            window.location.replace('/reception');
+                        } else if (email === 'cosgrove') {
+                            window.location.replace('/account');
+                        } else {
+                            window.location.replace('/employee');
+                        }
                     }
                 } else {
                     alert('Something went wrong logging in');
@@ -30,10 +38,6 @@ export default class Login extends Component {
         }
     }
 
-    register() {
-        window.location.replace('/register');
-    }
-
     componentDidMount() {
         document.getElementById('loginPassword').addEventListener('keypress', e => {
             if (e.key === 'Enter') {
@@ -42,34 +46,34 @@ export default class Login extends Component {
         });
     }
 
+    register() {
+        window.location.replace('/register');
+    }
+
     render() {
         return (
-            <div id="login-page" style={{
+            <div style={{
                 width: '50%',
                 margin: '2% auto'
             }}>
                 <div className="text-center mb-4">
-                    <h3 style={{fontWeight: 'bold'}}>Cosgrove Hockey Portal</h3>
-                    For employees, please head over to the
-                    <a href="/employees"> employee portal</a>
-                    .
+                    <h3 style={{fontWeight: 'bold'}}>Employee Portal</h3>
                 </div>
-                    <div className="input-group mb-3">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text">Email</span>
-                        </div>
-                        <input id="loginEmail" className="form-control" />
+                <div className="input-group mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">Email</span>
                     </div>
-                    <div className="input-group mb-3">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text">Password</span>
-                        </div>
-                        <input id="loginPassword" className="form-control" type="password" />
+                    <input id="loginEmail" className="form-control" />
+                </div>
+                <div className="input-group mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">Password</span>
                     </div>
-                    <div style={{textAlign: 'center'}}>
-                        <button style={{width: '25%'}} className="btn btn-dark" onClick={this.login}>Login</button>
-                        <button style={{width: '25%', marginLeft: '2%'}} className="btn btn-light" onClick={this.register}>Register</button>
-                    </div>
+                    <input id="loginPassword" className="form-control" type="password" />
+                </div>
+                <div style={{textAlign: 'center'}}>
+                    <button style={{width: '25%'}} className="btn btn-dark" onClick={this.login}>Login</button>
+                </div>
             </div>
         )
     }

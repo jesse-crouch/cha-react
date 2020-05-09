@@ -73,6 +73,7 @@ export default class Calendar extends Component {
                                     spots = flaggedTimes[l][1];
                                 }
                             }
+                            // Ghost event built using service and event defaults
                             var event = {
                                 id: 'i-' + eventNum,
                                 name: result.service_info.fullServiceName,

@@ -33,7 +33,17 @@ export default class Header extends Component {
         if (document.getElementById('headerLogin').innerHTML === 'Login') {
             window.location.replace('/login');
         } else {
-            window.location.replace('/account');
+            $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                if (result) {
+                    if (result.payload.id === 4) {
+                        window.location.replace('/reception');
+                    } else {
+                        window.location.replace('/account');
+                    }
+                } else {
+                    alert('Something went wrong fetching payload');
+                }
+            });
         }
     }
 

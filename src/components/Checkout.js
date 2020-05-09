@@ -13,6 +13,59 @@ var subtotal = 0;
 var total = 0;
 
 export default class Checkout extends Component {
+    constructor() {
+        super();
+
+        // Check if this is reception
+        if (Cookies.get('token')) {
+            $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                if (result.payload.id === 4) {
+                    // Stage the cart for a drop-in booking
+                    this.setState({ staging: true });
+                    $.post(server + '/api/stageCart', { cart: Cookies.get('cart') }, stageResult => {
+                        // Check for form completion every 5 seconds
+                        var timer = null;
+                        timer = setInterval(() => {
+                            $.get(server + '/api/checkStaging', stageCheck => {
+                                if (stageCheck.active) {
+                                    // Stop the timer
+                                    clearInterval(timer);
+                                    timer = null;
+
+                                    // Client has completed data entry
+                                    $.post(server + '/api/unstageCart', { token: Cookies.get('token') }, unstageResult => {
+                                        if (unstageResult.error) {
+                                            setPopupContent('Error', unstageResult.error);
+                                            togglePopup(true);
+                                        } else {
+                                            document.getElementById('waiting-text').innerHTML = 'Waiting for payment...';
+                                            document.getElementById('totalText').innerHTML = 'Amount due (with tax): $' + unstageResult.total.toFixed(2);
+                                            document.getElementById('paid-btn').style.display = '';
+                                            document.getElementById('totalText').style.display = '';
+                                        }
+                                    });
+                                }
+                            });
+                        }, 5000);
+                    });
+                }
+            });
+        }
+
+        this.state = {
+            staging: false
+        };
+    }
+
+    finishStaging() {
+        // Refresh the page
+        setPopupContent('Success', 'Drop-In added successfully');
+        togglePopup(true);
+        setTimeout(() => {
+            Cookies.remove('cart');
+            window.location.replace('/account');
+        }, 2000);
+    }
 
     addTotals() {
         // Add subtotal, tax, and total rows
@@ -64,6 +117,23 @@ export default class Checkout extends Component {
             priceRow.innerHTML = this.extractPrice(event.price);
         }
 
+        // Check for membership item
+        if (event.eventType === 'membership') {
+            if (event.cancelling) {
+                priceRow.innerHTML = '0.00';
+            } else {
+                var price = parseInt(event.price.split('/')[0]);
+                if (event.id === 2) {
+                    price *= 6;
+                } else if (event.id === 3) {
+                    price *= 12;
+                }
+                priceRow.innerHTML = price + '.00';
+            }
+            timeRow.innerHTML = '';
+            nameRow.innerHTML = event.name.includes('Cancel') ? event.name : 'Membership - ' + event.name;
+        }
+
         newRow.appendChild(nameRow);
         newRow.appendChild(timeRow);
         newRow.appendChild(priceRow);
@@ -89,9 +159,10 @@ export default class Checkout extends Component {
 
     componentDidMount() {
         var items = Cookies.getJSON('cart').items;
+        console.log(items);
         for (var i in items) {
             this.addRow(items[i]);
-            subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price));
+            if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
         }
 
         // Check if logged in, and check for membership
@@ -116,49 +187,6 @@ export default class Checkout extends Component {
                             }, 'membershipRow');
                             subtotal -= this.extractPrice(classes[0].price);
                         }
-                        /*if (classes.length > 1) {
-                            // Show popup letting user choose the cart item to apply the discount to
-                            var rows = [];
-                            for (var j in classes) {
-                                var start = new Date(classes[j].epoch_date*1000);
-                                var end = new Date(start.getTime());
-                                end.setMinutes(end.getMinutes() + (60*classes[j].duration));
-
-                                var newRow = <tr>
-                                    <td>
-                                        <input id={uuid()} type="radio" onClick={(e) => this.updateClassSelection(e)} />
-                                        <div style={{display: 'none'}}>{this.extractPrice(classes[j].price)}</div>
-                                    </td>
-                                    <td>{classes[j].name}</td>
-                                    <td>{time(start) + ' - ' + time(end)}</td>
-                                    <td>{this.extractPrice(classes[j].price)}</td>
-                                </tr>;
-                                rows.push(newRow);
-                            }
-
-                            var content = <div>
-                                <p>Your membership allows you one free class per day.</p>
-                                <br />
-                                <p>Please choose which class to apply your discount to.</p>
-                                <table id="selectTable" className="table table-striped">
-                                    <thead className="thead thead-dark">
-                                        <tr>
-                                            <th>Select</th>
-                                            <th>Item</th>
-                                            <th>Time</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="select-table">
-                                        {rows}
-                                    </tbody>
-                                </table>
-                            </div>;
-                            setHTMLContent('Membership Discount', content);
-                            togglePopup(true);
-                        } else {
-                            
-                        }*/
                     }
                     this.addTotals();
                 } else {
@@ -178,21 +206,32 @@ export default class Checkout extends Component {
     }
     
     render() {
-        return (
-            <div id="fullCheckoutDiv">
-                <h3 className="text-center" style={{fontWeight: 'bold', margin: '1%'}}>Checkout</h3>
-                <table id="checkoutTable" className="table table-striped" style={{width: '60%', margin: '0 auto'}}>
-                    <thead className="thead thead-dark">
-                        <tr>
-                            <th>Item</th>
-                            <th>Time</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="checkout-table"></tbody>
-                </table>
-                <div id="details" />
-            </div>
-        )
+        if (this.state.staging) {
+            return (
+                <div className="text-center">
+                    <h3>Drop-In Booking</h3>
+                    <h6 id="waiting-text">Waiting for tablet input...</h6>
+                    <h5 id="totalText" style={{display: 'none'}}>Total</h5>
+                    <button id="paid-btn" className="btn btn-primary" onClick={this.finishStaging} style={{display: 'none'}}>Amount Was Paid</button>
+                </div>
+            );
+        } else {
+            return (
+                <div id="fullCheckoutDiv">
+                    <h3 className="text-center" style={{fontWeight: 'bold', margin: '1%'}}>Checkout</h3>
+                    <table id="checkoutTable" className="table table-striped" style={{width: '60%', margin: '0 auto'}}>
+                        <thead className="thead thead-dark">
+                            <tr>
+                                <th>Item</th>
+                                <th>Time</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="checkout-table"></tbody>
+                    </table>
+                    <div id="details" />
+                </div>
+            );
+        }
     }
 }

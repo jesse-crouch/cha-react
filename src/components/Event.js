@@ -3,15 +3,19 @@ import {time} from'../stringDate';
 import Cookies from 'js-cookie';
 
 export default function Event(props) {
+    console.log(props.event);
     const start = new Date(props.event.epoch_date*1000);
     const end = new Date(start.getTime());
-    end.setUTCMinutes(end.getUTCMinutes() + (props.event.duration*60));
-    const height = (4.2*props.event.duration) + 'em';
+    var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
+    end.setUTCMinutes(end.getUTCMinutes() + (duration*60));
+    const height = (4.2*duration) + 'em';
 
-    // Check if this event is in the past
+    // Check if this event is in the past if unmanaged
     var display = '';
-    if (start.getTime() < (new Date().getTime() - (1000*60*60*4))) {
-        display = 'none';
+    if (!props.managed) {
+        if (start.getTime() < (new Date().getTime() - (1000*60*60*4))) {
+            display = 'none';
+        }
     }
 
     // Set colour based on number of open event spots

@@ -5,6 +5,7 @@ import $ from 'jquery';
 import { toggleCart } from "./cartMethods";
 import monthNames from "../months";
 import server from "../fetchServer";
+import Cookies from 'js-cookie';
 
 function removeContent() {
     var popup = document.getElementById('popup');
@@ -22,8 +23,10 @@ export function togglePopup(enable) {
         var footer = document.getElementById('popup-footer');
         var addBtn = document.getElementById('addBtn');
         var addEventBtn = document.getElementById('addEventBtn');
+        var addEmployeeBtn = document.getElementById('employeeBtn');
         var deleteBtn = document.getElementById('deleteEventBtn');
         if (addBtn) { footer.removeChild(addBtn); }
+        if (addEmployeeBtn) { footer.removeChild(addEmployeeBtn); }
         if (addEventBtn) { footer.removeChild(addEventBtn); }
         if (deleteBtn) { footer.removeChild(deleteBtn); }
     } else {
@@ -35,7 +38,14 @@ export function togglePopup(enable) {
     var popup = document.getElementById('popup');
     if (!enable) { popup.style.width = ''; }
     var topValue = enable ? -50 : -(popup.clientHeight + 150);
-    $('#popup').animate({top: topValue + 'px'}, 0);
+    if (enable) {
+        document.getElementById('popup').style.visibility = 'visible';
+    }
+    $('#popup').animate({top: topValue + 'px'}, 0, '', () => {
+        if (!enable) {
+            document.getElementById('popup').style.visibility = 'hidden';
+        }
+    });
 }
 
 export function setPopupContent(title, content) {
@@ -65,14 +75,14 @@ export function setReactContent(title, content, width = '') {
     popup.style.width = width;
 }
 
-export function setHTMLContent(title, content, width = '', button = false) {
+export function setHTMLContent(title, content, width = '', cartButton = false, employeeButton = false) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;
     removeContent();
     ReactDOM.render(content, popup.children[1]);
     document.getElementById('popup').style.width = width;
     
-    if (button) {
+    if (cartButton) {
         // Add an add to cart button to the popup
         var addBtn = document.createElement('button');
         addBtn.id = 'addEventBtn';
@@ -193,6 +203,50 @@ export function setHTMLContent(title, content, width = '', button = false) {
         addBtn.innerHTML = 'Add Event';
         var closeBtn = document.getElementById('popupCloseBtn');
         document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
+    }
+
+    if (employeeButton) {
+        // Add an add to cart button to the popup
+        var employeeBtn = document.createElement('button');
+        employeeBtn.id = 'addEmployeeBtn';
+        employeeBtn.onclick = () => {
+            var cardID = document.getElementById('cardIDField').value;
+            cardID = cardID === '' ? 0 : parseInt(cardID);
+
+            $.post(server + '/api/newEmployee', {
+                first_name: document.getElementById('firstNameField').value,
+                last_name: document.getElementById('lastNameField').value,
+                email: document.getElementById('emailField').value,
+                phone: document.getElementById('phoneField').value,
+                pay: parseInt(document.getElementById('payField').value),
+                cardID: cardID,
+                hourly: document.getElementById('payTypeSelect').selectedIndex === 0,
+                instructor: document.getElementById('instructorCheck').checked,
+                token: Cookies.get('token')
+            }, result => {
+                if (result.error) {
+                    togglePopup(false);
+                    setTimeout(() => {
+                        setPopupContent('Error', result.error);
+                        togglePopup(true);
+                    }, 500);
+                } else {
+                    togglePopup(false);
+                    setTimeout(() => {
+                        setPopupContent('Success', 'New employee added, refreshing shortly...');
+                        togglePopup(true);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }, 500);
+                }
+            });
+        };
+        employeeBtn.className = 'btn btn-primary';
+        employeeBtn.style.float = 'left';
+        employeeBtn.innerHTML = 'Add Employee';
+        var closeButton = document.getElementById('popupCloseBtn');
+        document.getElementById('popup-footer').insertBefore(employeeBtn, closeButton);
     }
 }
 
