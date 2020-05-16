@@ -362,3 +362,19 @@ html {
   width: 75%;
   margin: 0 auto;
 }
+
+.form-control.sales-input {
+  width: 15%;
+  margin: 0 1% 1% 1%;
+  display: inline-block;
+}
+
+.socials a img {
+  width: 3vw;
+  margin: 1%;
+  transition: all 0.5s;
+}
+
+.socials a img:hover {
+  opacity: 0.5;
+}

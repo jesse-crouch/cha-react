@@ -56,14 +56,14 @@ export default class Account extends Component {
                     title="View Users"
                     description="View all of your current registered and unregistered users"
                     icon={<FaUser />}
-                    link="all-users"
+                    link="users-info"
                 />,
                 <UserAction
                     key={uuid()}
                     title="View Sales Data"
                     description="View your to-date sales and tax data"
                     icon={<FaDollarSign />}
-                    link="sales"
+                    link="sales-info"
                 />
             ];
             

@@ -112,13 +112,13 @@ export default class CheckoutForm extends Component {
 
         if (completeOrder) {
             var token = Cookies.get('token');
-            var user_id = token ? this.state.payload.id : null;
+            var user_id = token ? this.state.payload.id : 'null';
             var first_name = token ? this.state.payload.first_name : firstNameField.value.toLowerCase();
             var last_name = token ? this.state.payload.last_name : lastNameField.value.toLowerCase();
             var email = token ? this.state.payload.email : emailField.value.toLowerCase();
             var phone = token ? this.state.payload.phone : phoneField.value.toLowerCase();
-            var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : null;
-            var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : null;
+            var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
+            var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
 
             alert(Cookies.get('token'));
             $.post(server + '/api/sale', {

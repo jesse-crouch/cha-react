@@ -12,10 +12,10 @@ export default class Reception extends Component {
         super();
 
         var error = <div style={{textAlign: 'center'}}>
-            <h3 style={{margin: "2% auto"}}>Access Forbidden</h3>
-            Login via the
-            <a href="/employees"> employee portal </a>
-            to access this page.
+            <h3 style={{margin: "2% auto"}}>Zugriff Verboten</h3>
+            Bitte melden Sie sich über das
+            <a href="/employees"> Mitarbeiterportal </a>
+            an.
             </div>;
         var loading = <div id="reception-div">
             <h3 style={{margin: "2% auto"}}>Loading...</h3>

@@ -203,6 +203,13 @@ export default class AddEvent extends Component {
                     if (document.getElementById('saturdayCheck').checked) days.push(6);
                 }
 
+                // Format duration if hours was chosen
+                if (interval === 'Hours') {
+                    duration = parseFloat(duration);
+                } else {
+                    duration = 'null';
+                }
+
                 // Send information to server
                 $.post(server + '/api/addEvent', {
                     name: name,

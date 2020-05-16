@@ -91,13 +91,13 @@ export default function PaymentForm(props) {
                     var payload = payloadResult.payload;
                     
                     var token = Cookies.get('token');
-                    var user_id = token ? payload.id : null;
+                    var user_id = token ? payload.id : 'null';
                     var first_name = token ? payload.first_name : firstNameField.value.toLowerCase();
                     var last_name = token ? payload.last_name : lastNameField.value.toLowerCase();
                     var email = token ? payload.email : emailField.value.toLowerCase();
                     var phone = token ? payload.phone : phoneField.value.toLowerCase();
-                    var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : null;
-                    var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : null;
+                    var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
+                    var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
 
                     $.post(server + '/api/sale', {
                         user_id: user_id,
@@ -108,7 +108,7 @@ export default function PaymentForm(props) {
                         phone: phone,
                         child_first_name: child_first_name,
                         child_last_name: child_last_name,
-                        amount_due: props.amount,
+                        amount_due: 0,
                         cart: Cookies.get('cart'),
                         free: document.getElementById('membershipRow') != null
                     }, result => {

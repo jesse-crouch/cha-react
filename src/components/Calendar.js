@@ -11,8 +11,10 @@ export default class Calendar extends Component {
     constructor(props) {
         super();
 
+        var currentDate = new Date();
+        if (currentDate.getDay() === 6) currentDate.setDate(currentDate.getDate() + 1);
         this.state = {
-            currentDate: new Date(),
+            currentDate: currentDate,
             service: props.id,
             days: []
         };
@@ -43,6 +45,9 @@ export default class Calendar extends Component {
                 var flaggedTimes = [];
                 var date = new Date(result.startDate);
                 var currentDate = new Date();
+                if (currentDate.getDay() === 6) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
                 var eventNum = 0;
 
                 for (var i=0; i<7; i++) {
@@ -163,12 +168,12 @@ export default class Calendar extends Component {
     render() {
         return (
             <div id="calendar">
-                <div className="calendar-control">
+                <div id="calendar-control" className="calendar-control">
                     <button id="prevBtn" className="btn btn-light" onClick={() => this.changeWeek(false)}>Previous</button>
                     <h1>{monthNames[this.state.currentDate.getMonth()]}</h1>
                     <button id="nextBtn" className="btn btn-light" onClick={() => this.changeWeek(true)}>Next</button>
                 </div>
-                <div id="week" className="week">
+                <div id="week" className="week" style={{minHeight: document.documentElement.clientHeight + 'px'}}>
                     {this.state.days}
                 </div>
             </div>

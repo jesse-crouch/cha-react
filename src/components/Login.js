@@ -17,7 +17,7 @@ export default class Login extends Component {
                         setPopupContent('Error', result.error);
                         togglePopup(true);
                     } else {
-                        Cookies.set('token', result.token, { expires: 3 });
+                        Cookies.set('token', result.token, { expires: 0.5 });
                         window.location.replace('/');
                     }
                 } else {

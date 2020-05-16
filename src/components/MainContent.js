@@ -14,6 +14,9 @@ import Register from './Register';
 import PersonalInfo from './PersonalInfo';
 import EmployeeInfo from './EmployeeInfo';
 import Staging from './Staging';
+import UserInfo from './UserInfo';
+import SalesInfo from './SalesInfo';
+import Schedule from './Schedule';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -56,6 +59,12 @@ export default class MainContent extends Component {
             content = <EmployeeInfo />;
         } else if (url === '/staging') {
             content = <Staging />;
+        } else if (url === '/users-info') {
+            content = <UserInfo />;
+        } else if (url === '/sales-info') {
+            content = <SalesInfo />;
+        } else if (url === '/schedule') {
+            content = <Schedule />;
         }
 
         return (
