@@ -11,7 +11,9 @@ export default class Schedule extends Component {
     }
 
     componentDidMount() {
-        var date = new Date();
+        window.location.replace('/');
+
+        /*var date = new Date();
         date.setHours(1);
         $.get(server + '/api/getScheduleEvents', result => {
             var days = [], formattedDays = [];
@@ -27,7 +29,7 @@ export default class Schedule extends Component {
             }
 
             this.setState({ days: formattedDays });
-        });
+        });*/
     }
 
     render() {
