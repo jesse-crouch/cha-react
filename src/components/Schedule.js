@@ -26,11 +26,7 @@ export default class Schedule extends Component {
             var days = [[],[],[],[],[],[],[]], formattedDays = [];
             for (var j in result.events) {
                 var eventDate = new Date(result.events[j].epoch_date);
-                if (eventDate.getDay() === 1) {
-                    for (var l=0; l<10; l++) days[eventDate.getDay()].push(result.events[j]);
-                } else {
-                    days[eventDate.getDay()].push(result.events[j]);
-                }
+                days[eventDate.getDay()].push(result.events[j]);
             }
 
             for (var k in days) {
