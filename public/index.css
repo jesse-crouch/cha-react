@@ -378,3 +378,30 @@ html {
 .socials a img:hover {
   opacity: 0.5;
 }
+
+.schedule-week {
+  display: flex;
+  text-align: center;
+}
+
+@media(max-width: 950px) {
+  .schedule-week {
+    flex-direction: column;
+  }
+}
+
+.schedule-day {
+  width: 100%;
+  border: 2px solid black;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+}
+
+.schedule-day::-webkit-scrollbar {
+  display: none;
+}
+
+.schedule-day p {
+  background: black;
+  color: white;
+}

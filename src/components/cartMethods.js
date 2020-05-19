@@ -120,7 +120,7 @@ export function addNonEventToCart(event, userAdded) {
                 for (var i in cart.items) {
                     if (cart.items[i].id === event.id) {
                         cart.items.splice(i,1);
-                        Cookies.set('cart', { items: cart.items });
+                        Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
                     }
                 }
             }
@@ -138,13 +138,13 @@ export function addNonEventToCart(event, userAdded) {
             if (cart) {
                 // Cart exists, append new item
                 cart.items.push(event);
-                Cookies.set('cart', { items: cart.items });
+                Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
 
                 console.log(Cookies.getJSON('cart'));
             } else {
                 var items = [];
                 items.push(event);
-                Cookies.set('cart', { items: items });
+                Cookies.set('cart', { items: items }, { expires: 0.5 });
 
                 console.log(Cookies.getJSON('cart'));
             }
@@ -207,7 +207,7 @@ export function addToCart(event, refresh) {
             for (var i in cart.items) {
                 if (cart.items[i].id === event.id) {
                     cart.items.splice(i,1);
-                    Cookies.set('cart', { items: cart.items });
+                    Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
                 }
             }
         }
@@ -227,13 +227,13 @@ export function addToCart(event, refresh) {
         if (cart) {
             // Cart exists, append new item
             cart.items.push(event);
-            Cookies.set('cart', { items: cart.items });
+            Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
 
             console.log(Cookies.getJSON('cart'));
         } else {
             var items = [];
             items.push(event);
-            Cookies.set('cart', { items: items });
+            Cookies.set('cart', { items: items }, { expires: 0.5 });
 
             console.log(Cookies.getJSON('cart'));
         }
