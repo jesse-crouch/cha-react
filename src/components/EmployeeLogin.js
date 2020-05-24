@@ -51,9 +51,11 @@ export default class Login extends Component {
     }
 
     render() {
+	var width = document.documentElement.clientWidth < 950 ? '80%' : '50%';
+
         return (
             <div style={{
-                width: '50%',
+                width: width,
                 margin: '2% auto'
             }}>
                 <div className="text-center mb-4">

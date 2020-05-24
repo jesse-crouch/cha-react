@@ -12,8 +12,11 @@ export default class Schedule extends Component {
     }
 
     componentDidMount() {
-        document.getElementById('main').style.background = 'url(./images/reception_show.png)';
+        document.getElementById('main').style.background = 'url(./images/dotted_dark.png)';
         document.getElementById('schedule-week').style.height = (document.documentElement.clientHeight - document.getElementById('navbar').clientHeight) + 'px';
+	if (document.documentElement.clientWidth < 950) {
+            document.getElementById('schedule-week').style.height = '';
+        }
 
         var date = new Date();
         if (date.getDay() === 6) {

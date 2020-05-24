@@ -97,6 +97,17 @@ html {
   width: 90%;
 }
 
+@media(max-width: 950px) {
+  .service-footer {
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .service {
+    margin: 10%;
+  }
+}
+
 .service:hover {
   background: #bbbbbb;
 }
@@ -404,4 +415,10 @@ html {
 .schedule-day p {
   background: black;
   color: white;
+}
+
+@media(max-width: 950px) {
+  .service {
+    width: 80%;
+  }
 }

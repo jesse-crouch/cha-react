@@ -54,7 +54,7 @@ export default class Calendar extends Component {
                     var events = [];
                     for (var j in result.events) {
                         const eventDate = new Date(result.events[j].epoch_date*1000);
-                        if (eventDate.getDay() === i && i >= currentDate.getDay()) {
+                        if (eventDate.getDay() === i) {
                             if (result.events[j].type === 'class') {
                                 events.push(result.events[j]);
                             } else {

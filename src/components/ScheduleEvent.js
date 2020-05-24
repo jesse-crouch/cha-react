@@ -2,7 +2,7 @@ import React from 'react'
 import {time} from'../stringDate';
 
 export default function Event(props) {
-    const start = new Date(props.event.epoch_date*1000);
+    const start = new Date(props.event.epoch_date);
     const end = new Date(start.getTime());
     var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
     end.setUTCMinutes(end.getUTCMinutes() + (duration*60));
