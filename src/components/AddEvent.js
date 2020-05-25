@@ -15,9 +15,9 @@ export default class AddEvent extends Component {
             for (var i in result.services) {
                 // eslint-disable-next-line
                 var newOption = document.createElement('option');
-                newOption.innerHTML = result.services[i].fullServiceName;
+                newOption.innerHTML = result.services[i].name;
                 newOption.setAttribute('id', result.services[i].id);
-                newOption.setAttribute('name', result.services[i].fullServiceName);
+                newOption.setAttribute('name', result.services[i].name);
                 newOption.setAttribute('spots', result.services[i].spots);
                 serviceSelect.appendChild(newOption);
             }

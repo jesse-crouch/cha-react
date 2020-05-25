@@ -49,7 +49,7 @@ export default class ReceptionTable extends Component {
             <td>{booking.phone}</td>
             <td>{booking.child_first_name}</td>
             <td>{booking.child_last_name}</td>
-            <td>{booking.fullServiceName}</td>
+            <td>{booking.name}</td>
             <td>{time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>
             <td><button className="btn btn-primary" onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>

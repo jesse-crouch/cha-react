@@ -41,7 +41,7 @@ export default class SalesInfo extends Component {
             <td>{sale.name}</td>
             <td>{sale.email}</td>
             <td>{sale.child_name}</td>
-            <td>{sale.fullServiceName}</td>
+            <td>{sale.service_name}</td>
             <td>{date(new Date(sale.date))}</td>
             <td>{sale.amount_due}</td>
             <td>{sale.base_price}</td>
@@ -61,7 +61,7 @@ export default class SalesInfo extends Component {
             data = data.filter(sale => { return sale.name.toLowerCase().includes(name) || sale.child_name.toLowerCase().includes(name) });
         }
         if (service.length > 0) {
-            data = data.filter(sale => { return sale.fullServiceName.toLowerCase().includes(service) });
+            data = data.filter(sale => { return sale.serviceName.toLowerCase().includes(service) });
         }
         if (month.length > 0) {
             data = data.filter(sale => { return new Date(sale.date).getMonth() === parseInt(month)-1 });

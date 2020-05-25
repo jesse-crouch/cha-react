@@ -12,7 +12,7 @@ export default function Event(props) {
     className += 'primary my-1';
 
     return (
-        <button id={props.event.id + 'b'} className={className} style={{height: height, background: props.event.colour}}>
+        <button id={props.event.id + 'b'} className={className} style={{height: height, background: props.event.colour}} onClick={props.eventHandler ? () => props.eventHandler(props.event) : null}>
             {props.event.name}
             <br />
             {time(start) + ' - ' + time(end)}

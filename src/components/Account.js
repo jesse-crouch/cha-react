@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import server from '../fetchServer';
 import Cookies from 'js-cookie';
 import $ from 'jquery';
-import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign } from 'react-icons/fa';
+import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign, FaIdCard } from 'react-icons/fa';
 import UserAction from './UserAction';
 import {uuid} from 'uuidv4';
 
@@ -13,7 +13,8 @@ export default class Account extends Component {
         this.state = {
             payload: null,
             fullName: null,
-            actions: null
+            actions: null,
+            welcome: true
         };
     }
 
@@ -66,14 +67,48 @@ export default class Account extends Component {
                     link="sales-info"
                 />
             ];
+            var receptionActions = [
+                <UserAction
+                    key={uuid()}
+                    title="Reception"
+                    description="View bookings, and facilitate payments"
+                    icon={<FaCalendarAlt />}
+                    link="reception"
+                />,
+                <UserAction
+                    key={uuid()}
+                    title="Drop-In"
+                    description="Book and facilitate payment for a customer who hasn't booked online"
+                    icon={<FaDollarSign />}
+                    link="drop-in"
+                />,
+                <UserAction
+                    key={uuid()}
+                    title="Clock In/Out"
+                    description="Open the clock in/out page"
+                    icon={<FaIdCard />}
+                    link="clocking"
+                />
+            ];
             
             $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
                 var firstName = result.payload.first_name.charAt(0).toUpperCase() + result.payload.first_name.substr(1);
                 var lastName = result.payload.last_name.charAt(0).toUpperCase() + result.payload.last_name.substr(1);
+                var activeActions = null, welcome = true;
+                if (result.payload.id === 4) {
+                    activeActions = receptionActions;
+                    welcome = false;
+                } else if (result.payload.admin) {
+                    activeActions = adminActions;
+                    welcome = false;
+                } else {
+                    activeActions = actions;
+                }
                 this.setState({
                     payload: result.payload,
                     fullName: firstName + ' ' + lastName,
-                    actions: result.payload.admin ? adminActions : actions
+                    actions: activeActions,
+                    welcome: welcome
                 }, () => {
                     document.getElementById('loading-text').style.display = 'none';
                     document.getElementById('account-content').style.display = '';
@@ -90,8 +125,8 @@ export default class Account extends Component {
                 <h3 id="loading-text">Loading...</h3>
                 <div id="account-content" style={{display: "none", textAlign: "center"}}>
                     <FaUserCircle style={{fontSize: "6em", margin: "1%"}} />
-                    <h3>Welcome, {this.state.fullName}</h3>
-                    <p>Here you can view and make changes to your account with Cosgrove Hockey Academy</p>
+                    <h3>{this.state.welcome ? 'Welcome, ' + this.state.fullName : this.state.fullName}</h3>
+                    <p>{this.state.welcome ? 'Here you can view and make changes to your account with Cosgrove Hockey Academy' : ''}</p>
                     <div id="user-actions" className="user-actions card-deck">
                         {this.state.actions}
                     </div>

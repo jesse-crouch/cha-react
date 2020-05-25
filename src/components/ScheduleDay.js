@@ -10,11 +10,21 @@ export default class Day extends Component {
 
         this.state = {
             events: props.events.map(event => {
-                return <ScheduleEvent key={uuid()} event={event} />
+                return <ScheduleEvent key={uuid()} event={event} eventHandler={props.eventHandler ? props.eventHandler : null} />
             })
         };
 
         this.scroll = this.scroll.bind(this);
+    }
+
+    componentDidMount() {
+        // Calculate the max events that the client can show before scrolling
+        var clientHeight = document.documentElement.clientHeight - document.getElementById('navbar').clientHeight;
+        var dayHeight = document.getElementById('day-' + this.props.date).scrollHeight;
+        console.log(clientHeight + ',' + dayHeight);
+        if (dayHeight > clientHeight) {
+            setInterval(this.scroll, 100);
+        }
     }
 
     scroll() {
@@ -30,9 +40,6 @@ export default class Day extends Component {
 
     render() {
         var date = new Date(this.props.date);
-        if (this.props.events.length > 8) {
-            setInterval(this.scroll, 100);
-        }
 
         return (
             <div id={"day-" + this.props.date} direction="1" className="schedule-day">

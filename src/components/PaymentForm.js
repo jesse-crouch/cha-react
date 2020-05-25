@@ -62,7 +62,6 @@ export default function PaymentForm(props) {
     }
 
     if (chargeCard) {
-        alert('Charging..');
         const result = await stripe.confirmCardPayment(props.clientSecret, {
         payment_method: {
             card: elements.getElement(CardElement),

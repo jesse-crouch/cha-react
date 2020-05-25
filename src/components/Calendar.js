@@ -42,7 +42,6 @@ export default class Calendar extends Component {
             } else {
                 console.log(result);
                 var days = [];
-                var flaggedTimes = [];
                 var date = new Date(result.startDate);
                 var currentDate = new Date();
                 if (currentDate.getDay() === 6) {
@@ -50,16 +49,34 @@ export default class Calendar extends Component {
                 }
                 var eventNum = 0;
 
+                // Sort large events and conflicts into days
+                var conflicts = [[],[],[],[],[],[],[]];
+                for (var q in result.largeEvents) {
+                    var conflictDate = new Date(result.largeEvents[q].epoch_date*1000);
+                    conflicts[conflictDate.getDay()].push(result.largeEvents[q]);
+                }
+
                 for (var i=0; i<7; i++) {
                     var events = [];
                     for (var j in result.events) {
                         const eventDate = new Date(result.events[j].epoch_date*1000);
                         if (eventDate.getDay() === i) {
-                            if (result.events[j].type === 'class') {
-                                events.push(result.events[j]);
-                            } else {
-                                flaggedTimes.push([result.events[j].epoch_date, result.events[j].open_spots]);
+                            // Check for conflicting events
+                            var conflict = false;
+                            // eslint-disable-next-line
+                            for (var q in conflicts[eventDate.getDay()]) {
+                                // eslint-disable-next-line
+                                var conflictEvent = conflicts[eventDate.getDay()][q];
+                                // eslint-disable-next-line
+                                var conflictDate = new Date(conflictEvent.epoch_date*1000);
+                                if (conflictDate.getUTCHours() === eventDate.getUTCHours() && conflictDate.getUTCMinutes() === eventDate.getUTCMinutes()) {
+                                    // Conflict
+                                    conflict = true;
+                                    result.events[j].name = 'Unavailabe';
+                                    events.push(result.events[j]);
+                                }
                             }
+                            if (!conflict) events.push(result.events[j]);
                         }
                     }
 
@@ -73,15 +90,11 @@ export default class Calendar extends Component {
                         trackDate.setUTCHours(open_time,0,0,0);
                         for (var k=0; k<((close_time - open_time) / result.service_info.duration); k++) {
                             var spots = result.service_info.spots;
-                            for (var l in flaggedTimes) {
-                                if (flaggedTimes[l][0] === trackDate.getTime()/1000) {
-                                    spots = flaggedTimes[l][1];
-                                }
-                            }
+                            
                             // Ghost event built using service and event defaults
                             var event = {
                                 id: 'i-' + eventNum,
-                                name: result.service_info.fullServiceName,
+                                name: result.service_info.name,
                                 duration: result.service_info.duration,
                                 service_id: result.service_info.id,
                                 price: result.service_info.price,
@@ -94,16 +107,25 @@ export default class Calendar extends Component {
 
                             // Check for resource conflict
                             // eslint-disable-next-line
-                            for (var l in result.resourceConflicts) {
-                                if (result.resourceConflicts[l].epoch_date === trackDate.getTime()/1000) {
-                                    event.name = 'Class Scheduled';
-                                    event.duration = result.resourceConflicts[l].duration;
+                            var conflict = false;
+                            // eslint-disable-next-line
+                            for (var q in conflicts[trackDate.getDay()]) {
+                                // eslint-disable-next-line
+                                var conflictEvent = conflicts[trackDate.getDay()][q];
+                                // eslint-disable-next-line
+                                var conflictDate = new Date(conflictEvent.epoch_date*1000);
+                                if (conflictDate.getUTCHours() === trackDate.getUTCHours() && conflictDate.getUTCMinutes() === trackDate.getUTCMinutes()) {
+                                    // Conflict
+                                    conflict = true;
+                                    event.name = 'Unavailable';
+                                    events.push(event);
+                                    console.log(event);
                                 }
                             }
 
                             trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
                             // Check that this event won't exceed the closing time
-                            if (trackDate.getUTCHours() < close_time) {
+                            if (trackDate.getUTCHours() < close_time && !conflict) {
                                 events.push(event);
                             }
                             eventNum++;

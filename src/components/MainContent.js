@@ -17,6 +17,8 @@ import Staging from './Staging';
 import UserInfo from './UserInfo';
 import SalesInfo from './SalesInfo';
 import Schedule from './Schedule';
+import Clocking from './Clocking';
+import DropIn from './DropIn';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -65,6 +67,10 @@ export default class MainContent extends Component {
             content = <SalesInfo />;
         } else if (url === '/schedule') {
             content = <Schedule />;
+        } else if (url === '/clocking') {
+            content = <Clocking />;
+        } else if (url === '/drop-in') {
+            content = <DropIn />;
         }
 
         return (

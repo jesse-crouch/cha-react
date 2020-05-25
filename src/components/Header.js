@@ -35,11 +35,7 @@ export default class Header extends Component {
         } else {
             $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
                 if (result) {
-                    if (result.payload.id === 4) {
-                        window.location.replace('/reception');
-                    } else {
-                        window.location.replace('/account');
-                    }
+                    window.location.replace('/account');
                 } else {
                     alert('Something went wrong fetching payload');
                 }

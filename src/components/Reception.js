@@ -193,7 +193,7 @@ export default class Reception extends Component {
                             for (var i in result.services) {
                                 // eslint-disable-next-line
                                 var newOption = document.createElement('option');
-                                newOption.innerHTML = result.services[i].fullServiceName;
+                                newOption.innerHTML = result.services[i].name;
                                 newOption.setAttribute('id', result.services[i].id);
                                 serviceSelect.appendChild(newOption);
                             }

@@ -69,7 +69,7 @@ export default class Bookings extends Component {
         end.setUTCMinutes(end.getUTCMinutes() + (60*booking.duration));
         console.log(booking);
         return <tr key={uuid()}>
-            <td>{booking.fullServiceName}</td>
+            <td>{booking.name}</td>
             <td>{date(start)}</td>
             <td>{time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>

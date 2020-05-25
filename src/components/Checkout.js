@@ -11,46 +11,11 @@ import { uuid } from 'uuidv4';
 
 var subtotal = 0;
 var total = 0;
+var timer = null;
 
 export default class Checkout extends Component {
     constructor() {
         super();
-
-        // Check if this is reception
-        if (Cookies.get('token')) {
-            $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
-                if (result.payload.id === 4) {
-                    // Stage the cart for a drop-in booking
-                    this.setState({ staging: true });
-                    $.post(server + '/api/stageCart', { cart: Cookies.get('cart') }, stageResult => {
-                        // Check for form completion every 5 seconds
-                        var timer = null;
-                        timer = setInterval(() => {
-                            $.get(server + '/api/checkStaging', stageCheck => {
-                                if (stageCheck.active) {
-                                    // Stop the timer
-                                    clearInterval(timer);
-                                    timer = null;
-
-                                    // Client has completed data entry
-                                    $.post(server + '/api/unstageCart', { token: Cookies.get('token') }, unstageResult => {
-                                        if (unstageResult.error) {
-                                            setPopupContent('Error', unstageResult.error);
-                                            togglePopup(true);
-                                        } else {
-                                            document.getElementById('waiting-text').innerHTML = 'Waiting for payment...';
-                                            document.getElementById('totalText').innerHTML = 'Amount due (with tax): $' + unstageResult.total.toFixed(2);
-                                            document.getElementById('paid-btn').style.display = '';
-                                            document.getElementById('totalText').style.display = '';
-                                        }
-                                    });
-                                }
-                            });
-                        }, 5000);
-                    });
-                }
-            });
-        }
 
         this.state = {
             staging: false
@@ -158,59 +123,121 @@ export default class Checkout extends Component {
     }
 
     componentDidMount() {
-        var items = Cookies.getJSON('cart').items;
-        console.log(items);
-        for (var i in items) {
-            this.addRow(items[i]);
-            if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
-        }
-
-        // Check if logged in, and check for membership
-        var token = Cookies.get('token');
-        if (token) {
-            $.post(server + '/api/checkMemberDiscount', { token: token, date: new Date().getTime()/1000 }, result => {
-                if (!result.error) {
-                    if (result.applyDiscount) {
-                        // Count the number of classes in the cart
-                        var classes = [];
+        // Check if this is reception
+        if (Cookies.get('token')) {
+            $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                if (result.payload.id === 4) {
+                    // Stage the cart for a drop-in booking
+                    this.setState({ staging: true }, () => {
+                        var items = Cookies.getJSON('cart').items;
                         for (var i in items) {
-                            if (items[i].type === 'class') {
-                                classes.push(items[i]);
+                            this.addRow(items[i]);
+                            if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
+                        }
+
+                        $.post(server + '/api/stageCart', { cart: Cookies.get('cart') }, stageResult => {
+                            // Check for form completion every 5 seconds
+                            timer = setInterval(() => {
+                                $.get(server + '/api/checkStaging', stageCheck => {
+                                    if (stageCheck.active) {
+                                        // Stop the timer
+                                        clearInterval(timer);
+                                        timer = null;
+
+                                        // Client has completed data entry
+                                        $.post(server + '/api/unstageCart', { token: Cookies.get('token') }, unstageResult => {
+                                            if (unstageResult.error) {
+                                                setPopupContent('Error', unstageResult.error);
+                                                togglePopup(true);
+                                            } else {
+                                                document.getElementById('waiting-text').innerHTML = 'Waiting for payment...';
+                                                document.getElementById('totalText').innerHTML = 'Amount due (with tax): $' + unstageResult.total.toFixed(2);
+                                                document.getElementById('paid-btn').style.display = '';
+                                                document.getElementById('totalText').style.display = '';
+                                            }
+                                        });
+                                    }
+                                });
+                            }, 5000);
+                        });
+                    });
+                } else {
+                    $.post(server + '/api/checkMemberDiscount', { token: Cookies.get('token'), date: new Date().getTime()/1000 }, result => {
+                        if (!result.error) {
+                            if (result.applyDiscount) {
+                                // Count the number of classes in the cart
+                                var classes = [];
+                                for (var i in items) {
+                                    if (items[i].type === 'class') {
+                                        classes.push(items[i]);
+                                    }
+                                }
+                                if (classes.length > 0) {
+                                    // Apply the discount to the only class in the cart
+                                    this.addRow({
+                                        name: '',
+                                        time: 'Membership Discount',
+                                        price: classes[0].price
+                                    }, 'membershipRow');
+                                    subtotal -= this.extractPrice(classes[0].price);
+                                }
+                            }
+                            this.addTotals();
+                        } else {
+                            if (result.error) {
+                                if (result.error !== 'no_membership') {
+                                    setPopupContent('Error', result.error);
+                                    togglePopup(true);
+                                }
+                            } else {
+                                alert('Something went wrong fetching token payload');
                             }
                         }
-                        if (classes.length > 0) {
-                            // Apply the discount to the only class in the cart
-                            this.addRow({
-                                name: '',
-                                time: 'Membership Discount',
-                                price: classes[0].price
-                            }, 'membershipRow');
-                            subtotal -= this.extractPrice(classes[0].price);
-                        }
-                    }
-                    this.addTotals();
-                } else {
-                    if (result.error) {
-                        if (result.error !== 'no_membership') {
-                            setPopupContent('Error', result.error);
-                            togglePopup(true);
-                        }
-                    } else {
-                        alert('Something went wrong fetching token payload');
-                    }
+                    });
                 }
             });
         } else {
+            var items = Cookies.getJSON('cart').items;
+            for (var i in items) {
+                this.addRow(items[i]);
+                if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
+            }
             this.addTotals();
         }
     }
     
+    // Render the checkout page normally unless client is logged in as 'reception', in which case
+    //      render the drop-in page using what is in the cart for staging.
     render() {
         if (this.state.staging) {
             return (
-                <div className="text-center">
+                <div className="text-center mt-5">
                     <h3>Drop-In Booking</h3>
-                    <h6 id="waiting-text">Waiting for tablet input...</h6>
+                    <h6 id="waiting-text">Navigate to https://cosgrovehockeyacademy.com/staging on the tablet to continue...</h6>
+                    <table id="checkoutTable" className="table table-striped" style={{width: '60%', margin: '0 auto'}}>
+                        <thead className="thead thead-dark">
+                            <tr>
+                                <th>Item</th>
+                                <th>Time</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="checkout-table"></tbody>
+                    </table>
+                    <button id="cancelBtn" className="btn btn-danger mt-2" onClick={() => {
+                        // Stop checking for staging updates, then cancel staging, clear cart, and send to account page
+                        clearInterval(timer);
+                        timer = null;
+                        $.get(server + '/api/cancelStaging', result => {
+                            if (result.error) {
+                                setPopupContent('Error', result.error);
+                                togglePopup(true);
+                            } else {
+                                Cookies.remove('cart');
+                                window.location.replace('/account');
+                            }
+                        });
+                    }}>Cancel</button>
                     <h5 id="totalText" style={{display: 'none'}}>Total</h5>
                     <button id="paid-btn" className="btn btn-primary" onClick={this.finishStaging} style={{display: 'none'}}>Amount Was Paid</button>
                 </div>

@@ -16,11 +16,12 @@ export default class Service extends Component {
         const bullets = this.state.service.description.slice(1);
 
         const priceData = this.state.service.price.split('/');
+        const nameData = this.state.service.name.split(' - ');
 
         return (
             <div id={"service-" + this.state.service.id} className="service" onClick={() => {this.props.handleClick(this.state.service)}}>
                 <div className="service-header">
-                    <h2>{this.state.service.name}</h2>
+                    <h2>{nameData[nameData.length - 1]}</h2>
                     <img src={imgLoc} alt="img" />
                 </div>
                 <div className="service-text">

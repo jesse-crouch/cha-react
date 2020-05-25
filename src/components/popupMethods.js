@@ -40,6 +40,7 @@ export function togglePopup(enable) {
     var topValue = enable ? -50 : -(popup.clientHeight + 150);
     if (enable) {
         document.getElementById('popup').style.visibility = 'visible';
+        document.documentElement.scrollTo(0,0);
     }
     $('#popup').animate({top: topValue + 'px'}, 0, '', () => {
         if (!enable) {

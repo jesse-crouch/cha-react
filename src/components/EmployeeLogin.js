@@ -20,9 +20,7 @@ export default class Login extends Component {
                         Cookies.set('token', result.token, { expires: 3 });
                         // Check for special logins and redirect as necessary
                         var email = document.getElementById('loginEmail').value;
-                        if (email === 'reception') {
-                            window.location.replace('/reception');
-                        } else if (email === 'cosgrove') {
+                        if (email === 'cosgrove' || email === 'reception') {
                             window.location.replace('/account');
                         } else {
                             window.location.replace('/employee');

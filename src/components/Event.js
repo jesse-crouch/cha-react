@@ -3,7 +3,6 @@ import {time} from'../stringDate';
 import Cookies from 'js-cookie';
 
 export default function Event(props) {
-    console.log(props.event);
     const start = new Date(props.event.epoch_date*1000);
     const end = new Date(start.getTime());
     var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
@@ -45,7 +44,7 @@ export default function Event(props) {
         }
     }
 
-    if (props.event.name === 'Class Scheduled') {
+    if (props.event.name === 'Unavailable') {
         className = 'event btn btn-dark my-1';
         disabled = true
     }
@@ -56,7 +55,7 @@ export default function Event(props) {
 
     return (
         <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: props.managed ? props.event.colour : ''}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
-            {time(start) + ' - ' + time(end)}
+            {props.event.name === 'Unavailable' ? 'Booked' : time(start) + ' - ' + time(end)}
         </button>
     )
 }
