@@ -45,6 +45,7 @@ export default class Staging extends Component {
         togglePopup(false);
         waiver = true;
         window.scrollTo(0,0);
+	document.getElementById('bookBtn').style.visibility = 'visible';
     }
 
     checkWaiver() {
@@ -67,7 +68,8 @@ export default class Staging extends Component {
                         first_name: document.getElementById('firstNameField').value,
                         last_name: document.getElementById('firstNameField').value,
                         email: document.getElementById('emailField').value,
-                        cart: result.cart
+                        cart: result.cart,
+			free: 'null'
                     }, saleResult => {
                         // Send sale IDs back to server for staging storage
                         $.post(server + '/api/storeTotal', { total: saleResult.total }, storeResult => {
@@ -116,7 +118,7 @@ export default class Staging extends Component {
                         <input type="submit" className="btn btn-secondary w-100" onClick={this.openWaiver} value="View Waiver" />
                     </div>
                 </div>
-                <button className="btn btn-primary" id="bookBtn" onClick={this.bookDropIn}>Book</button>
+                <button className="btn btn-primary" style={{visibility: 'hidden'}} id="bookBtn" onClick={this.bookDropIn}>Book</button>
             </div>
         );
     }
