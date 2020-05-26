@@ -182,6 +182,11 @@ export default class Checkout extends Component {
                                     subtotal -= this.extractPrice(classes[0].price);
                                 }
                             }
+			    var items = Cookies.getJSON('cart').items;
+			    for (var i in items) {
+				this.addRow(items[i]);
+				if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
+			    }
                             this.addTotals();
                         } else {
                             if (result.error) {

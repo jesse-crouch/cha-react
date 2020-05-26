@@ -40,7 +40,7 @@ export default class CheckoutForm extends Component {
         });
 
         this.state = {
-            stripePromise: loadStripe('pk_test_cAJXHTciFWzvt1n3Tq1nLpsZ003fCUfr5C')
+            stripePromise: loadStripe('pk_live_ZjIXVe92nNlTcsNgm86AIArw00bWRI0d2o')
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
