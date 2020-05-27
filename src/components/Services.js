@@ -95,12 +95,12 @@ export default class Services extends Component {
             for (var i in this.state.services) {
                 const service = this.state.services[i];
                 if (!this.state.parent) {
-                    if (!service.id_chain) {
+                    if (!service.id_chain && !service.disabled) {
                         services.push(<Service key={uuid()} handleClick={this.handleClick} service={service} />);
                     }
                 } else {
                     if (service.id_chain) {
-                        if (service.id_chain.includes(this.state.parent) && service.id_chain.length === (this.state.level - 1)) {
+                        if (service.id_chain.includes(this.state.parent) && service.id_chain.length === (this.state.level - 1) && !service.disabled) {
                             services.push(<Service key={uuid()} handleClick={this.handleClick} service={service} />);
                         }
                     }

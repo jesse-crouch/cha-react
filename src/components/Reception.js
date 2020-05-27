@@ -89,10 +89,10 @@ export default class Reception extends Component {
                     setPopupContent('Error', result.error);
                     togglePopup(true);
                 } else {
-                    document.getElementById('popup').style.width = '70%';
                     togglePopup(false);
                     setReactContent('Bookings', <ReceptionTable bookings={result.bookings} />);
                     togglePopup(true);
+		    document.getElementById('popup').style.width = '80%';
                 }
             });
         } else {

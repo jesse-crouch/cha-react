@@ -13,6 +13,7 @@ export default class EventManager extends Component {
 
         var currentDate = new Date();
         currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+	currentDate.setHours(1,0,0,0);
         this.state = {
             currentDate: currentDate
         };
