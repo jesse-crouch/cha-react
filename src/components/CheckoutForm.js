@@ -120,7 +120,7 @@ export default class CheckoutForm extends Component {
             var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
             var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
 
-            alert(Cookies.get('token'));
+            //alert(Cookies.get('token'));
             $.post(server + '/api/sale', {
                 user_id: user_id,
                 token: Cookies.get('token'),
