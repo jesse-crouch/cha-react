@@ -38,7 +38,7 @@ export default class UserInfo extends Component {
         var expiry = user.membership_expiry != null ?
             date(new Date(user.membership_expiry)) :
             '';
-        var join_date = user.membership_expiry != null ?
+        var join_date = user.join_date != null ?
             date(new Date(user.join_date)) :
             '';
 

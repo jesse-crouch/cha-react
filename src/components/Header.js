@@ -49,7 +49,7 @@ export default class Header extends Component {
             window.location.replace('/register');
         } else {
             Cookies.remove('token');
-            window.location.replace('/');
+            window.location.replace('/register');
         }
     }
 

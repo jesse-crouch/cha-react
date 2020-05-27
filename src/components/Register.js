@@ -1,7 +1,51 @@
 import React from 'react'
+import server from '../fetchServer';
+import { togglePopup, setPopupContent } from './popupMethods';
+import $ from 'jquery';
 
 function register() {
+    var firstNameField = document.getElementById('firstNameField');
+    var lastNameField = document.getElementById('lastNameField');
+    var emailField = document.getElementById('emailField');
+    var phoneField = document.getElementById('phoneField');
 
+    // Check for empty or invalid fields
+    var validInfo = true;
+    if (firstNameField.value.length < 1) {
+        validInfo = false;
+        firstNameField.style.border = '1px solid red';
+    }
+    if (lastNameField.value.length < 1) {
+        validInfo = false;
+        lastNameField.style.border = '1px solid red';
+    }
+    if (emailField.value.length < 1 || !emailField.value.includes('@')) {
+        validInfo = false;
+        emailField.style.border = '1px solid red';
+    }
+    if (phoneField.value.length < 1) {
+        validInfo = false;
+        phoneField.style.border = '1px solid red';
+    }
+    if (validInfo) {
+        $.post(server + '/api/register', {
+            first_name: firstNameField.value,
+            last_name: lastNameField.value,
+            email: emailField.value,
+            phone: phoneField.value
+        }, result => {
+            if (result.error) {
+                setPopupContent('Error', result.error);
+                togglePopup(true);
+            } else {
+                setPopupContent('Success', 'Your information has been saved, but you are not yet registered. Please click the link sent to your email address to complete the process.');
+                togglePopup(true);
+                setTimeout(() => {
+                    window.location.replace('/login');
+                }, 4000);
+            }
+        })
+    }
 }
 
 export default function Register() {
