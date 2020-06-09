@@ -195,7 +195,7 @@ export function addToCart(event, refresh) {
         cartBody.removeChild(newRow);
         var eventBtn = document.getElementById(event.id + 'b');
         if (eventBtn) {
-            eventBtn.style.background = '#007bff';
+            eventBtn.style.background = event.colour;
             eventBtn.disabled = false;
         }
         var cart = Cookies.getJSON('cart');

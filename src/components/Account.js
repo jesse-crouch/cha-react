@@ -65,6 +65,13 @@ export default class Account extends Component {
                     description="View your to-date sales and tax data"
                     icon={<FaDollarSign />}
                     link="sales-info"
+                />,
+		<UserAction
+                    key={uuid()}
+                    title="Reception"
+                    description="View bookings, and facilitate payments"
+                    icon={<FaCalendarAlt />}
+                    link="reception"
                 />
             ];
             var receptionActions = [
@@ -123,7 +130,7 @@ export default class Account extends Component {
         return (
             <div>
                 <h3 id="loading-text">Loading...</h3>
-                <div id="account-content" style={{display: "none", textAlign: "center"}}>
+                <div id="account-content" style={{display: "none", textAlign: "center", marginBottom: "1%"}}>
                     <FaUserCircle style={{fontSize: "6em", margin: "1%"}} />
                     <h3>{this.state.welcome ? 'Welcome, ' + this.state.fullName : this.state.fullName}</h3>
                     <p>{this.state.welcome ? 'Here you can view and make changes to your account with Cosgrove Hockey Academy' : ''}</p>

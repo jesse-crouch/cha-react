@@ -99,7 +99,7 @@ export default class Calendar extends Component {
                             
                             // Ghost event built using service and event defaults
                             var event = {
-                                id: 'i-' + eventNum,
+                                id: 'i-' + uuid(),
                                 name: result.service_info.name,
                                 duration: result.service_info.duration,
                                 service_id: result.service_info.id,

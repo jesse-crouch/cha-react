@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom';
 import PaymentForm from './PaymentForm';
 import {Elements} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
@@ -7,37 +8,11 @@ import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { setPopupContent, togglePopup } from './popupMethods';
 
+var payload = null, clientSecret = null;
+
 export default class CheckoutForm extends Component {
     constructor(props) {
         super();
-
-        $.post(server + '/api/getClientSecret', { amount: props.amount }, result => {
-            this.setState(prevState => {
-                return {
-                    stripePromise: prevState.stripePromise,
-                    clientSecret: result.clientSecret
-                };
-            });
-            document.getElementById('submitBtn').style.display = '';
-
-            if (Cookies.get('token')) {
-                $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
-                    this.setState(prevState => {
-                        return {
-                            stripePromise: prevState.stripePromise,
-                            clientSecret: prevState.clientSecret,
-                            payload: result.payload         
-                        };
-                    }, () => {
-                        // Hide the stripe payment fields if the total is $0 (stripe can't process free stuff)
-                        // Display or hide the stripe form
-                        document.getElementById('paymentForm').style.display = props.amount === 0 ? 'none' : '';
-                        document.getElementById('paySubmitBtn').style.display = props.amount === 0 ? '' : 'none';
-                        document.getElementById('payCheckDiv').style.display = props.amount === 0 ? 'none' : '';
-                    });
-                });
-            }
-        });
 
         this.state = {
             stripePromise: loadStripe('pk_live_ZjIXVe92nNlTcsNgm86AIArw00bWRI0d2o')
@@ -47,15 +22,27 @@ export default class CheckoutForm extends Component {
     }
 
     componentDidMount() {
-        var token = Cookies.get('token');
-        if (token) {
-            var divs = document.getElementsByClassName('non-user');
-            for (var i in divs) {
-                if (divs[i].style !== undefined) {
-                    divs[i].style.display = 'none';
+        $.post(server + '/api/getClientSecret', { amount: this.props.amount }, result => {
+            clientSecret = result.clientSecret;
+            var elements =  <Elements stripe={this.state.stripePromise}>
+                                <PaymentForm clientSecret={clientSecret} amountDue={this.props.amount} />
+                            </Elements>;
+            ReactDOM.render(elements, document.getElementById('payment-form'), () => {
+                document.getElementById('submitBtn').style.display = '';
+                if (Cookies.get('token')) {
+                    $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                        payload = result.payload;
+                    });
+
+                    var divs = document.getElementsByClassName('non-user');
+                    for (var i in divs) {
+                        if (divs[i].style !== undefined) {
+                            divs[i].style.display = 'none';
+                        }
+                    }
                 }
-            }
-        }
+            });
+        });
     }
 
     handleMinorCheck(event) {
@@ -111,12 +98,17 @@ export default class CheckoutForm extends Component {
         }
 
         if (completeOrder) {
+            // Disable the submit button to prevent spam clicking and confusing the api
+            document.getElementById('paySubmitBtn').innerHTML = 'Loading...';
+            document.getElementById('paySubmitBtn').className = 'btn btn-warning';
+            document.getElementById('paySubmitBtn').disabled = true;
+
             var token = Cookies.get('token');
-            var user_id = token ? this.state.payload.id : 'null';
-            var first_name = token ? this.state.payload.first_name : firstNameField.value.toLowerCase();
-            var last_name = token ? this.state.payload.last_name : lastNameField.value.toLowerCase();
-            var email = token ? this.state.payload.email : emailField.value.toLowerCase();
-            var phone = token ? this.state.payload.phone : phoneField.value.toLowerCase();
+            var user_id = token ? payload.id : 'null';
+            var first_name = token ? payload.first_name : firstNameField.value.toLowerCase();
+            var last_name = token ? payload.last_name : lastNameField.value.toLowerCase();
+            var email = token ? payload.email : emailField.value.toLowerCase();
+            var phone = token ? payload.phone : phoneField.value.toLowerCase();
             var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
             var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
 
@@ -132,9 +124,11 @@ export default class CheckoutForm extends Component {
                 child_last_name: child_last_name,
                 amount_due: this.props.amount,
                 cart: Cookies.get('cart'),
-                free: document.getElementById('membershipRow') != null
+                free: document.getElementById('membershipRow') != null,
+                intent: null
             }, result => {
                 if (!result.error) {
+                    document.getElementById('paySubmitBtn').style.display = 'none';
                     setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
                     togglePopup(true);
 
@@ -203,11 +197,7 @@ export default class CheckoutForm extends Component {
                 <div className="text-center">
                     <button id="paySubmitBtn" className="btn btn-primary" style={{display: 'none'}} onClick={this.handleSubmit} >Confirm Order</button>
                 </div>
-                
-                <Elements stripe={this.state.stripePromise}>
-                    <PaymentForm clientSecret={this.state.clientSecret} />
-                </Elements>
-
+                <div id="payment-form"></div>
             </div>
         )
     }

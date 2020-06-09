@@ -37,7 +37,11 @@ export default function Event(props) {
     var cart = Cookies.getJSON('cart');
     if (cart) {
         for (var i in cart.items) {
-            if (cart.items[i].id === props.event.id) {
+	    var cartDate = new Date(cart.items[i].epoch_date*1000);
+	    var itemDate = new Date(props.event.epoch_date*1000);
+	    if (cart.items[i].epoch_date === props.event.epoch_date) {
+//		console.log(cart.items[i]);
+//		console.log(props.event);
                 className = 'event btn btn-success my-1';
                 disabled = true;
             }

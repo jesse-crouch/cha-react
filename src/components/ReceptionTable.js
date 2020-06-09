@@ -42,6 +42,8 @@ export default class ReceptionTable extends Component {
         var end = new Date(booking.epoch_date*1000);
         end.setUTCMinutes(end.getUTCMinutes() + (60*booking.duration));
 
+	var display = booking.amount_due === 0 ? 'none' : '';
+
         return <tr>
             <td>{booking.first_name}</td>
             <td>{booking.last_name}</td>
@@ -49,10 +51,10 @@ export default class ReceptionTable extends Component {
             <td>{booking.phone}</td>
             <td>{booking.child_first_name}</td>
             <td>{booking.child_last_name}</td>
-            <td>{booking.name}</td>
+            <td>{booking.service_name}</td>
             <td>{start.toLocaleDateString() + ' at ' + time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>
-            <td><button className="btn btn-primary" onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
+            <td><button className="btn btn-primary" style={{display: display}} onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
             <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id)}>Delete</button></td>
         </tr>;
     }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { uuid } from 'uuidv4';
+import Cookies from 'js-cookie';
 
 export default function Membership(props) {
     var priceData = props.membership.price.split('/');
@@ -22,6 +23,11 @@ export default function Membership(props) {
             buttonClass = 'btn btn-primary';
             buttonText = 'Upgrade';
         }
+    } else {
+	if (Cookies.get('token')) {
+		buttonClass = 'btn btn-primary';
+		buttonText = 'Join';
+	}
     }
     props.membership.buttonText = buttonText;
     var serviceHighlight = null;
