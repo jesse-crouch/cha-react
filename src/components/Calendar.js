@@ -32,7 +32,7 @@ export default class Calendar extends Component {
             id: this.props.id,
             date: this.state.currentDate.getTime()/1000
         }, (result) => {
-            console.log(result);
+            //console.log(result);
             if (result.error) {
                 setPopupContent('No Classes', result.error);
                 togglePopup(true);
@@ -40,7 +40,7 @@ export default class Calendar extends Component {
                     window.location.replace('/services');
                 }, 3000);
             } else {
-                console.log(result);
+                //console.log(result);
                 var days = [];
                 var date = new Date(result.startDate);
                 var currentDate = new Date();
@@ -82,15 +82,15 @@ export default class Calendar extends Component {
 
                     if (result.service_info.type === 'open') {
                         // Adding ghost events for open services
-                        // Business hours - Weekdays (4 PM - 9 PM), Weekends (8 AM - 9 PM)
-			var open_time = 0, close_time = 0;
-			if (i === 0 || i === 6) {
-				open_time = 9;
-				close_time = 17;
-			} else {
-				open_time = 12;
-				close_time = 20;
-			}
+                        // Business hours - Weekdays (12 PM - 8 PM), Weekends (9 AM - 5 PM)
+                        var open_time = 0, close_time = 0;
+                        if (i === 0 || i === 6) {
+                            open_time = 9;
+                            close_time = 17;
+                        } else {
+                            open_time = 12;
+                            close_time = 20;
+                        }
 
                         var trackDate = new Date(date.getTime());
                         trackDate.setUTCHours(open_time,0,0,0);
@@ -99,7 +99,7 @@ export default class Calendar extends Component {
                             
                             // Ghost event built using service and event defaults
                             var event = {
-                                id: 'i-' + uuid(),
+                                id: 'i-' + eventNum,
                                 name: result.service_info.name,
                                 duration: result.service_info.duration,
                                 service_id: result.service_info.id,
@@ -110,6 +110,10 @@ export default class Calendar extends Component {
                                 instructor_name: result.service_info.instructor_name,
                                 type: 'open'
                             };
+
+                            if (event.id === 'i-31') {
+                                console.log(event);
+                            }
 
                             // Check for resource conflict
                             // eslint-disable-next-line
@@ -125,13 +129,13 @@ export default class Calendar extends Component {
                                     conflict = true;
                                     event.name = 'Unavailable';
                                     events.push(event);
-                                    console.log(event);
+                                    //console.log(event);
                                 }
                             }
 
                             trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
                             // Check that this event won't exceed the closing time
-                            if (trackDate.getUTCHours() < close_time && !conflict) {
+                            if (trackDate.getUTCHours() <= close_time && !conflict) {
                                 events.push(event);
                             }
                             eventNum++;

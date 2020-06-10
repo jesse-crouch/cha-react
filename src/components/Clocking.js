@@ -23,19 +23,13 @@ export default class Clocking extends Component {
                             button.innerHTML = 'No Employee Found';
                             button.className = 'btn btn-dark mt-5 mx-auto';
                             setTimeout(() => {
-                                button.innerHTML = 'Scan Card';
-                                button.className = 'btn btn-secondary mt-5 mx-auto';
-                                input.value = '';
-                                input.focus();
+                                window.location.reload();
                             }, 2000);
                         } else {
                             button.innerHTML = 'Clocking ' + result.status + ' - ' + result.fullName;
                             button.className = 'btn btn-success mt-5 mx-auto';
                             setTimeout(() => {
-                                button.innerHTML = 'Scan Card';
-                                button.className = 'btn btn-secondary mt-5 mx-auto';
-                                input.value = '';
-                                input.focus();
+                                window.location.reload();
                             }, 2000);
                         }
                     }

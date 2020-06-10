@@ -4,7 +4,7 @@ import { togglePopup, setPopupContent } from './popupMethods';
 import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { uuid } from 'uuidv4';
-import { date } from '../stringDate';
+import { date, time } from '../stringDate';
 
 export default class SalesInfo extends Component {
     constructor() {
@@ -43,7 +43,7 @@ export default class SalesInfo extends Component {
             <td>{sale.child_name}</td>
             <td>{sale.service_name}</td>
             <td>{date(new Date(sale.date))}</td>
-            <td>{sale.amount_due}</td>
+            <td>{time(new Date(sale.date))}</td>
             <td>{sale.base_price}</td>
             <td>{sale.tax}</td>
             <td>{sale.total}</td>
@@ -55,6 +55,7 @@ export default class SalesInfo extends Component {
         var service = document.getElementById('serviceInput').value;
         var month = document.getElementById('monthInput').value;
         var year = document.getElementById('yearInput').value;
+        var _time = document.getElementById('timeInput').value;
 
         var data = this.state.salesData;
         if (name.length > 0) {
@@ -68,6 +69,9 @@ export default class SalesInfo extends Component {
         }
         if (year.length > 0) {
             data = data.filter(sale => { return new Date(sale.date).getFullYear() === parseInt(year) });
+        }
+        if (_time.length > 0) {
+            data = data.filter(sale => { return time(new Date(sale.date)).includes(_time) });
         }
 
         this.setState(prevState => {
@@ -88,6 +92,7 @@ export default class SalesInfo extends Component {
                     <input placeholder="Service" id="serviceInput" className="form-control sales-input" onChange={this.filterTable} />
                     <input placeholder="Month" id="monthInput" className="form-control sales-input" onChange={this.filterTable} />
                     <input placeholder="Year" id="yearInput" className="form-control sales-input" onChange={this.filterTable} />
+                    <input placeholder="Time" id="timeInput" className="form-control sales-input" onChange={this.filterTable} />
                 </div>
                 <div style={{height: '50vh', overflowY: 'scroll'}}>
                     <table className="table table-striped w-75" style={{margin: "0 auto"}}>
@@ -98,14 +103,15 @@ export default class SalesInfo extends Component {
                                 <th>Child Name</th>
                                 <th>Service</th>
                                 <th>Date</th>
-                                <th>Amount Due</th>
+                                <th>Time</th>
                                 <th>Base Price</th>
                                 <th>Tax</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
                         <tbody id="salesTable">{this.state.activeSalesData.map(sale => {
-                            return this.newRow(sale);
+                            if (sale.amount_due === 0)
+                                return this.newRow(sale);
                         })}</tbody>
                     </table>
                 </div>
