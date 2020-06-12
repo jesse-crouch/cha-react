@@ -112,6 +112,8 @@ export default class SalesInfo extends Component {
                         <tbody id="salesTable">{this.state.activeSalesData.map(sale => {
                             if (sale.amount_due === 0)
                                 return this.newRow(sale);
+                            else
+                                return null;
                         })}</tbody>
                     </table>
                 </div>

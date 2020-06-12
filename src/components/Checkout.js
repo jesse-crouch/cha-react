@@ -17,6 +17,10 @@ export default class Checkout extends Component {
     constructor() {
         super();
 
+        if (!Cookies.get('cart')) {
+            window.location.replace('/services');
+        }
+
         this.state = {
             staging: false
         };
@@ -164,6 +168,7 @@ export default class Checkout extends Component {
                 } else {
                     $.post(server + '/api/checkMemberDiscount', { token: Cookies.get('token'), date: new Date().getTime()/1000 }, result => {
                         if (!result.error) {
+                            var items = JSON.parse(Cookies.getJSON('cart')).items;
                             if (result.applyDiscount) {
                                 // Count the number of classes in the cart
                                 var classes = [];
@@ -182,11 +187,11 @@ export default class Checkout extends Component {
                                     subtotal -= this.extractPrice(classes[0].price);
                                 }
                             }
-			    var items = Cookies.getJSON('cart').items;
-			    for (var i in items) {
-				this.addRow(items[i]);
-				if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
-			    }
+                            // eslint-disable-next-line
+                            for (var i in items) {
+                                this.addRow(items[i]);
+                                if (!items[i].name.includes('Cancel')) { subtotal = Number.parseFloat(subtotal) + Number.parseFloat(this.extractPrice(items[i].price)); }
+                            }
                             this.addTotals();
                         } else {
                             if (result.error) {

@@ -6,7 +6,10 @@ import {loadStripe} from '@stripe/stripe-js';
 import server from '../fetchServer';
 import $ from 'jquery';
 import Cookies from 'js-cookie';
-import { setPopupContent, togglePopup } from './popupMethods';
+import { setPopupContent, togglePopup, setDOMContent } from './popupMethods';
+import { date, time } from '../stringDate';
+// eslint-disable-next-line
+import { STRIPE_API_KEY_LIVE, STRIPE_API_KEY_TEST } from '../privateKeys';
 
 var payload = null, clientSecret = null;
 
@@ -15,7 +18,7 @@ export default class CheckoutForm extends Component {
         super();
 
         this.state = {
-            stripePromise: loadStripe('pk_live_ZjIXVe92nNlTcsNgm86AIArw00bWRI0d2o')
+            stripePromise: loadStripe(STRIPE_API_KEY_LIVE)
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -103,43 +106,97 @@ export default class CheckoutForm extends Component {
             document.getElementById('paySubmitBtn').className = 'btn btn-warning';
             document.getElementById('paySubmitBtn').disabled = true;
 
-            var token = Cookies.get('token');
-            var user_id = token ? payload.id : 'null';
-            var first_name = token ? payload.first_name : firstNameField.value.toLowerCase();
-            var last_name = token ? payload.last_name : lastNameField.value.toLowerCase();
-            var email = token ? payload.email : emailField.value.toLowerCase();
-            var phone = token ? payload.phone : phoneField.value.toLowerCase();
-            var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
-            var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
-
-            //alert(Cookies.get('token'));
-            $.post(server + '/api/sale', {
-                user_id: user_id,
-                token: Cookies.get('token'),
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-                phone: phone,
-                child_first_name: child_first_name,
-                child_last_name: child_last_name,
-                amount_due: this.props.amount,
-                cart: Cookies.get('cart'),
-                free: document.getElementById('membershipRow') != null,
-                intent: null
-            }, result => {
-                if (!result.error) {
-                    document.getElementById('paySubmitBtn').style.display = 'none';
-                    setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
+            // Check before charging if any items have become unavailable
+            $.post(server + '/api/checkAvailable', { cart: Cookies.get('cart') }, availableResult => {
+                if (availableResult.error) {
+                    setPopupContent('Error', availableResult.error);
                     togglePopup(true);
-
-                    Cookies.remove('cart');
-                    document.getElementById('paySubmitBtn').style.display = 'none';
-                    setTimeout(() => {
-                        window.location.replace('/services');
-                    }, 3000);
                 } else {
-                    setPopupContent('Error', result.error);
-                    togglePopup(true);
+                    if (availableResult.fullEvents.length > 0) {
+                        // At least one item has become unavailable
+                        var items = document.createElement('p');
+                        var warning = document.createTextNode('Some of the items you have booked have become unavailble while they have been in your cart. The following items have been removed from your cart:');
+                        items.appendChild(warning);
+                        items.appendChild(document.createElement('br'));
+                        items.appendChild(document.createElement('br'));
+                        var cart = JSON.parse(Cookies.get('cart'));
+                        for (var i in availableResult.fullEvents) {
+                            var itemDate = new Date(parseInt(availableResult.fullEvents[i].epoch_date)*1000);
+                            var item = document.createTextNode(availableResult.fullEvents[i].name + ' on ' + date(itemDate) + ' at ' + time(itemDate));
+                            items.appendChild(item);
+                            items.appendChild(document.createElement('br'));
+
+                            // Remove this item from the cart
+                            if (cart.items.length === 1) {
+                                Cookies.remove('cart');
+                            } else {
+                                for (var j in cart.items) {
+                                    if (cart.items[j].id === availableResult.fullEvents[i].id) {
+                                        cart.items.splice(j,1);
+                                        Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
+                                    }
+                                }
+                            }
+                        }
+                        Cookies.set('reload', 'true');
+                        setDOMContent('Warning', items);
+                        togglePopup(true);
+                    } else {
+                        var token = Cookies.get('token');
+                        var user_id = token ? payload.id : 'null';
+                        var first_name = token ? payload.first_name : firstNameField.value.toLowerCase();
+                        var last_name = token ? payload.last_name : lastNameField.value.toLowerCase();
+                        var email = token ? payload.email : emailField.value.toLowerCase();
+                        var phone = token ? payload.phone : phoneField.value.toLowerCase();
+                        var child_first_name = minorCheck.checked ? childFirstNameField.value.toLowerCase() : '';
+                        var child_last_name = minorCheck.checked ? childLastNameField.value.toLowerCase() : '';
+            
+                        //alert(Cookies.get('token'));
+                        $.post(server + '/api/sale', {
+                            user_id: user_id,
+                            token: Cookies.get('token'),
+                            first_name: first_name,
+                            last_name: last_name,
+                            email: email,
+                            phone: phone,
+                            child_first_name: child_first_name,
+                            child_last_name: child_last_name,
+                            amount_due: this.props.amount,
+                            cart: Cookies.get('cart'),
+                            free: document.getElementById('membershipRow') != null,
+                            intent: null
+                        }, result => {
+                            if (!result.error) {
+                                if (result.fullEvents.length > 0) {
+                                    // One or more items in the cart could not be booked
+                                    var items = document.createElement('p');
+                                    var warning = document.createTextNode('Some of the items you have booked have become unavailble in the time since you added them to your cart. Any other bookings in your cart have been booked successfully. The unavailable items are:');
+                                    items.appendChild(warning);
+                                    items.appendChild(document.createElement('br'));
+                                    items.appendChild(document.createElement('br'));
+                                    for (var i in result.fullEvents) {
+                                        var itemDate = new Date(parseInt(result.fullEvents[i].epoch_date)*1000);
+                                        var item = document.createTextNode(result.fullEvents[i].name + ' on ' + date(itemDate) + ' at ' + time(itemDate));
+                                        items.appendChild(item);
+                                        items.appendChild(document.createElement('br'));
+                                    }
+                                    setDOMContent('Warning', items);
+                                    togglePopup(true);
+                                } else {
+                                    setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
+                                    togglePopup(true);
+                                    setTimeout(() => {
+                                        window.location.replace('/services');
+                                    }, 3000);
+                                }
+                                Cookies.remove('cart');
+                                document.getElementById('paySubmitBtn').style.display = 'none';
+                            } else {
+                                setPopupContent('Error', result.error);
+                                togglePopup(true);
+                            }
+                        });
+                    }
                 }
             });
         }

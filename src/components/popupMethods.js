@@ -45,6 +45,12 @@ export function togglePopup(enable) {
     $('#popup').animate({top: topValue + 'px'}, 0, '', () => {
         if (!enable) {
             document.getElementById('popup').style.visibility = 'hidden';
+            if (Cookies.get('reload')) {
+                Cookies.remove('reload');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }
         }
     });
 }
