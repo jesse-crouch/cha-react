@@ -18,6 +18,7 @@ export default function Event(props) {
     }
 
     // Set colour based on number of open event spots
+    var background = '';
     var ratio = props.event.open_spots / props.event.total_spots;
     var className = 'event btn btn-';
     var disabled = false;
@@ -29,6 +30,7 @@ export default function Event(props) {
         className += 'danger';
     } else {
         className += 'dark';
+        background = 'black';
         disabled = true;
     }
     className += ' my-1';
@@ -44,18 +46,23 @@ export default function Event(props) {
         }
     }
 
-    if (props.event.name === 'Unavailable') {
-        className = 'event btn btn-dark my-1';
-        disabled = true
-    }
     if (props.managed) {
+        background = props.event.colour;
         disabled = false;
         className = 'event btn btn-dark my-1';
     }
+    if (props.event.name === 'Class') {
+        className = 'event btn btn-dark my-1';
+        disabled = true
+    }
+
+    var buttonText = time(start) + ' - ' + time(end);
+    if (props.event.open_spots === 0) buttonText = 'Booked';
+    if (props.event.name === 'Class') buttonText = 'Class Booked';
 
     return (
-        <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: props.managed ? props.event.colour : ''}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
-            {props.event.name === 'Unavailable' ? 'Booked' : time(start) + ' - ' + time(end)}
+        <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: background}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>
+            {buttonText}
         </button>
     )
 }

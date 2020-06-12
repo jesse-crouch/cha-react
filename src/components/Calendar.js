@@ -127,7 +127,7 @@ export default class Calendar extends Component {
                                 if (conflictDate.getUTCHours() === trackDate.getUTCHours() && conflictDate.getUTCMinutes() === trackDate.getUTCMinutes()) {
                                     // Conflict
                                     conflict = true;
-                                    event.name = 'Unavailable';
+                                    event.name = 'Class';
                                     events.push(event);
                                     //console.log(event);
                                 }
