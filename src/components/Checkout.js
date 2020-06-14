@@ -168,7 +168,7 @@ export default class Checkout extends Component {
                 } else {
                     $.post(server + '/api/checkMemberDiscount', { token: Cookies.get('token'), date: new Date().getTime()/1000 }, result => {
                         if (!result.error) {
-                            var items = JSON.parse(Cookies.getJSON('cart')).items;
+                            var items = Cookies.getJSON('cart').items;
                             if (result.applyDiscount) {
                                 // Count the number of classes in the cart
                                 var classes = [];
