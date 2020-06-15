@@ -20,7 +20,7 @@
     "uuidv4": "^6.0.6"
   },
   "scripts": {
-    "start": "PORT=5490 react-scripts start",
+    "start": "PORT=5490 HTTPS=true SSL_CRT_FILE=ssl/server-cert.crt SSL_KEY_FILE=ssl/server-key.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

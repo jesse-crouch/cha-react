@@ -105,3 +105,6 @@ dist
 
 # private keys file
 src/privateKeys.js
+
+# SSL Files
+ssl
