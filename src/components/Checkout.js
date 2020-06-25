@@ -7,11 +7,15 @@ import $ from 'jquery';
 import server from '../fetchServer';
 import { /*setHTMLContent,*/ togglePopup, setPopupContent } from './popupMethods';
 import { uuid } from 'uuidv4';
+import { isDOMComponent } from 'react-dom/test-utils';
 //import { uuid } from 'uuidv4';
 
 var subtotal = 0;
 var total = 0;
 var timer = null;
+var payload = null;
+
+var selected = [];
 
 export default class Checkout extends Component {
     constructor() {
@@ -38,24 +42,44 @@ export default class Checkout extends Component {
 
     addTotals() {
         // Add subtotal, tax, and total rows
+        var details = document.getElementById('details');
+        if (details.childElementCount > 0) {
+            while(details.firstChild) details.removeChild(details.firstChild);
+        }
+
         var tax = subtotal*0.13;
         total = Number.parseFloat(subtotal) + Number.parseFloat(tax);
         this.addRow({
             name: '',
             time: 'Subtotal',
             price: subtotal + '/'
-        });
+        }, 'subtotal-row');
         this.addRow({
             name: '',
             time: 'Tax (HST)',
             price: tax + '/'
-        });
+        }, 'tax-row');
         this.addRow({
             name: '',
             time: 'Total',
             price: total + '/'
-        });
-        ReactDOM.render(<CheckoutForm amount={total} />, document.getElementById('details'));
+        }, 'total-row');
+        ReactDOM.render(<CheckoutForm amount={total} />, details);
+    }
+
+    formatName(first, last) {
+        var first_name =  first.substr(0,1).toUpperCase() + first.substr(1);
+        var last_name =  last.substr(0,1).toUpperCase() + last.substr(1);
+        return first_name + ' ' + last_name;
+    }
+
+    includes(option) {
+        for (var i in selected) {
+            if (selected[i][1] === option) {
+                return true;
+            }
+        }
+        return false;
     }
 
     addRow(event, id = uuid()) {
@@ -66,6 +90,96 @@ export default class Checkout extends Component {
         var nameRow = document.createElement('td');
         var timeRow = document.createElement('td');
         var priceRow = document.createElement('td');
+        var personRow = document.createElement('td');
+        if (payload) {
+            var personSelect = document.createElement('select');
+            var personSelectOption = document.createElement('option');
+
+            personSelect.id = 's-' + id;
+            personSelectOption.innerHTML = 'Select a person';
+            personSelect.appendChild(personSelectOption);
+            var userOption = document.createElement('option');
+            var userName = this.formatName(payload.first_name, payload.last_name);
+            userOption.innerHTML = userName;
+            personSelect.appendChild(personSelectOption);
+            personSelect.appendChild(userOption);
+            personSelect.addEventListener('change', () => {
+                 if (personSelect.selectedIndex > 0) {
+                    var option = personSelect.options[personSelect.selectedIndex].value;
+
+                    // Check for discount only if this option hasn't been selected
+                    if (!this.includes(option)) {
+                            $.post(server + '/api/checkDiscount', { token: Cookies.get('token'), eventDate: event.epoch_date, index: personSelect.selectedIndex }, result => {
+                                if (result.error) {
+                                    setPopupContent('Error', result.error);
+                                    togglePopup(true);
+                                } else {
+                                    if (result.discount !== null) {
+                                        if (result.discount) {
+                                            if (priceRow.innerHTML !== '0.00') {
+                                                priceRow.innerHTML = '0.00';
+                                                subtotal -= this.extractPrice(event.price);
+                                                var tax = subtotal*0.13;
+                                                total = parseFloat(subtotal) + parseFloat(tax);
+                                                document.getElementById('subtotal-row').children[3].innerHTML = subtotal.toFixed(2);
+                                                document.getElementById('tax-row').children[3].innerHTML = tax.toFixed(2);
+                                                document.getElementById('total-row').children[3].innerHTML = total.toFixed(2);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                    }
+                    selected.push(['s-' + id, option]);
+                 } else {
+                    // Remove any entries from selected
+                    // eslint-disable-next-line
+                    for (var i in selected) {
+                        if (selected[i][0] === 's-' + id) {
+                            selected.splice(i);
+                        }
+                    }
+
+                    if (priceRow.innerHTML === '0.00') {
+                        var price = parseFloat(this.extractPrice(event.price));
+                        priceRow.innerHTML = price.toFixed(2);
+                        subtotal += price;
+                        var tax = subtotal*0.13;
+                        total = parseFloat(subtotal) + parseFloat(tax);
+                        document.getElementById('subtotal-row').children[3].innerHTML = subtotal.toFixed(2);
+                        document.getElementById('tax-row').children[3].innerHTML = tax.toFixed(2);
+                        document.getElementById('total-row').children[3].innerHTML = total.toFixed(2);
+                    }
+                 }
+            });
+
+            for (var i in payload.children) {
+                var childOption = document.createElement('option');
+                var childInfo = payload.children[i].split(' ');
+                var childName = this.formatName(childInfo[0], childInfo[1]);
+                if (childName !== userName) {
+                    childOption.innerHTML = childName;
+                    childOption.setAttribute('event-id', event.id);
+                    personSelect.appendChild(childOption);   
+                }
+            }
+
+            personRow.appendChild(personSelect);
+        } else {
+            var container = document.createElement('div');
+            container.className = 'form-row';
+
+            var firstName = document.createElement('input');
+            var lastName = document.createElement('input');
+
+            firstName.placeholder = 'First Name';
+            lastName.placeholder = 'Last Name';
+
+            container.appendChild(firstName);
+            container.appendChild(lastName);
+
+            personRow.appendChild(container);
+        }
 
         nameRow.innerHTML = event.name;
         if (event.name.length > 0) {
@@ -104,6 +218,11 @@ export default class Checkout extends Component {
         }
 
         newRow.appendChild(nameRow);
+        if (payload && event.name.length > 0) {
+            newRow.appendChild(personRow);
+        } else {
+            newRow.appendChild(document.createElement('td'));
+        }
         newRow.appendChild(timeRow);
         newRow.appendChild(priceRow);
 
@@ -130,6 +249,7 @@ export default class Checkout extends Component {
         // Check if this is reception
         if (Cookies.get('token')) {
             $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
+                payload = result.payload;
                 if (result.payload.id === 4) {
                     // Stage the cart for a drop-in booking
                     this.setState({ staging: true }, () => {
@@ -166,9 +286,20 @@ export default class Checkout extends Component {
                         });
                     });
                 } else {
+                    var items = Cookies.getJSON('cart').items;
+                    for (var i in items) {
+                        this.addRow(items[i]);
+                        if (!items[i].name.includes('Cancel')) {
+                            subtotal = parseFloat(subtotal) + parseFloat(this.extractPrice(items[i].price));
+                        }
+                    }
+                    this.addTotals();
+                    /*
                     $.post(server + '/api/checkMemberDiscount', { token: Cookies.get('token'), date: new Date().getTime()/1000 }, result => {
                         if (!result.error) {
                             var items = Cookies.getJSON('cart').items;
+                            
+
                             if (result.applyDiscount) {
                                 // Count the number of classes in the cart
                                 var classes = [];
@@ -203,7 +334,7 @@ export default class Checkout extends Component {
                                 alert('Something went wrong fetching token payload');
                             }
                         }
-                    });
+                    });*/
                 }
             });
         } else {
@@ -260,6 +391,7 @@ export default class Checkout extends Component {
                         <thead className="thead thead-dark">
                             <tr>
                                 <th>Item</th>
+                                <th>Booking For</th>
                                 <th>Time</th>
                                 <th>Price</th>
                             </tr>

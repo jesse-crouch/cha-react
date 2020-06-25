@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import server from '../fetchServer'
-import { togglePopup, setPopupContent } from './popupMethods';
+import { togglePopup, setPopupContent, setReactContent } from './popupMethods';
 import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { uuid } from 'uuidv4';
 import { date } from '../stringDate';
+import { FaCog } from 'react-icons/fa';
+import UserSettings from './UserSettings';
+import MembershipInfo from './MembershipInfo';
 
 export default class UserInfo extends Component {
     componentDidMount() {
@@ -24,33 +27,26 @@ export default class UserInfo extends Component {
     }
 
     newRow(user) {
-        var membership = '';
-        if (user.membership === 1) {
-            membership = 'Monthly';
-        } else if (user.membership === 2) {
-            membership = '6 Months';
-        } else if (user.membership === 3) {
-            membership = 'Annual';
-        } else {
-            membership = '';
-        }
-
-        var expiry = user.membership_expiry != null ?
-            date(new Date(user.membership_expiry)) :
-            '';
         var join_date = user.join_date != null ?
             date(new Date(user.join_date)) :
             '';
+        var display = user.membership === null ? 'none' : '';
 
         return <tr id={'r-' + user.id} key={uuid()}>
             <td>{user.first_name}</td>
             <td>{user.last_name}</td>
             <td>{user.email}</td>
             <td>{user.phone}</td>
-            <td>{membership}</td>
-            <td>{expiry}</td>
+            <td><button className="btn btn-secondary" style={{display: display}} onClick={() => {
+                setReactContent('Membership Information', <MembershipInfo user={user} />);
+                togglePopup(true);
+            }}>Membership</button></td>
             <td>{join_date}</td>
-            <td>{user.service}</td>
+            <td><button className='btn btn-outline-secondary' onClick={() => {
+                setReactContent('User Settings', <UserSettings user={user} />);
+                togglePopup(true);
+                document.getElementById('popup').style.width = '65%';
+            }}><FaCog /></button></td>
         </tr>;
     }
 
@@ -66,9 +62,8 @@ export default class UserInfo extends Component {
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Membership</th>
-                            <th>Membership Expires</th>
                             <th>Registered On</th>
-                            <th>Most Bought Service</th>
+                            <th>Settings</th>
                         </tr>
                     </thead>
                     <tbody id="userTable"></tbody>
