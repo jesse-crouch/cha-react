@@ -91,27 +91,18 @@ export default class Calendar extends Component {
                             open_time = 12;
                             close_time = 20;
                         }
-			var closed = [new Date(2020, 6, 18), new Date(2020, 6, 19), new Date(2020, 6, 20)];
+			18,
+			13-17
+
+			19 ALL
+
+			20
 
                         var trackDate = new Date(date.getTime());
                         trackDate.setUTCHours(open_time,0,0,0);
                         for (var k=0; k<((close_time - open_time) / result.service_info.duration); k++) {
                             var spots = result.service_info.spots;
-				var noEvents = false;
-				for (var z in closed) {
-					if (closed[z].getFullYear() === trackDate.getFullYear() &&
-					    closed[z].getMonth() === trackDate.getMonth() &&
-					    closed[z].getDate() === trackDate.getDate()) {
-						noEvents = true;
-						if (closed[z].getDate() === 18) {
-							if (trackDate.getUTCHours() >= 13 && trackDate.getUTCHours() < 17) {
-								noEvents = false;
-							}
-						}
-					}
-				}
-
-			    if (!noEvents) {
+                            
                             // Ghost event built using service and event defaults
                             var event = {
                                 id: 'i-' + eventNum,
@@ -125,6 +116,10 @@ export default class Calendar extends Component {
                                 instructor_name: result.service_info.instructor_name,
                                 type: 'open'
                             };
+
+                            if (event.id === 'i-31') {
+                                console.log(event);
+                            }
 
                             // Check for resource conflict
                             // eslint-disable-next-line
@@ -150,10 +145,7 @@ export default class Calendar extends Component {
                                 events.push(event);
                             }
                             eventNum++;
-                        } else {
-				trackDate.setMinutes(trackDate.getMinutes() + (60*result.service_info.duration));
-			}
-			}
+                        }
                     }
 
                     days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={false} />);

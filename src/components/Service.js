@@ -18,10 +18,12 @@ export default class Service extends Component {
         const priceData = this.state.service.price.split('/');
         const nameData = this.state.service.name.split(' - ');
 
+	const headerColour = nameData[nameData.length - 1].includes('Girls') ? '#f784a8' : 'black';
+
         return (
             <div id={"service-" + this.state.service.id} className="service" onClick={() => {this.props.handleClick(this.state.service)}}>
                 <div className="service-header">
-                    <h2>{nameData[nameData.length - 1]}</h2>
+                    <h2 style={{background: headerColour}}>{nameData[nameData.length - 1]}</h2>
                     <img src={imgLoc} alt="img" />
                 </div>
                 <div className="service-text">
