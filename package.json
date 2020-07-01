@@ -12,15 +12,18 @@
     "jquery": "^3.4.1",
     "js-cookie": "^2.2.1",
     "react": "^16.12.0",
+    "react-csv": "^2.0.3",
     "react-dom": "^16.12.0",
     "react-icons": "^3.9.0",
     "react-scripts": "3.4.0",
     "react-square-payment-form": "^0.6.1",
     "react-stripe-checkout": "^2.6.3",
+    "table2csv": "^1.1.4",
     "uuidv4": "^6.0.6"
   },
   "scripts": {
     "start": "PORT=5490 HTTPS=true SSL_CRT_FILE=ssl/server-cert.crt SSL_KEY_FILE=ssl/server-key.key react-scripts start",
+    "local": "PORT=5490 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

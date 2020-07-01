@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import server from '../fetchServer';
 import Cookies from 'js-cookie';
 import $ from 'jquery';
-import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign, FaIdCard } from 'react-icons/fa';
+import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign, FaIdCard, FaFileInvoiceDollar } from 'react-icons/fa';
 import UserAction from './UserAction';
 import {uuid} from 'uuidv4';
 
@@ -66,7 +66,14 @@ export default class Account extends Component {
                     icon={<FaDollarSign />}
                     link="sales-info"
                 />,
-		<UserAction
+                <UserAction
+                    key={uuid()}
+                    title="View Pending Sales"
+                    description="View and update incoming sales for the day"
+                    icon={<FaFileInvoiceDollar />}
+                    link="pending-sales"
+                />,
+		        <UserAction
                     key={uuid()}
                     title="Reception"
                     description="View bookings, and facilitate payments"

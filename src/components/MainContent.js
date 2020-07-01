@@ -20,6 +20,7 @@ import Schedule from './Schedule';
 import Clocking from './Clocking';
 import DropIn from './DropIn';
 import Verification from './Verification';
+import PendingSales from './PendingSales';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -74,6 +75,8 @@ export default class MainContent extends Component {
             content = <DropIn />;
         } else if (url.includes('/verification')) {
             content = <Verification />;
+        } else if (url === '/pending-sales') {
+            content = <PendingSales />;
         }
 
         return (
