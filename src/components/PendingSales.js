@@ -24,7 +24,7 @@ export default class PendingSales extends Component {
                 downloadBtn.addEventListener('click', () => {
                     var element = document.createElement('a');
                     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById('pendingSales').outerHTML));
-                    element.setAttribute('download', 'PendingSales.xls');
+                    element.setAttribute('download', 'Pending Sales - ' + date(new Date()) + '.xls');
                     element.style.display = 'none';
                     document.body.appendChild(element);
                     element.click();
@@ -41,23 +41,13 @@ export default class PendingSales extends Component {
         var saleDate = new Date(sale.epoch_date*1000);
 
         return <tr id={'r-' + sale.id} key={uuid()}>
-            <td>{sale.first_name}</td>
-            <td>{sale.last_name}</td>
+            <td>{sale.first_name + ' ' + sale.last_name}</td>
             <td>{sale.email}</td>
             <td>{sale.phone}</td>
             <td>{sale.service_name}</td>
             <td>{subtotal}</td>
             <td>{tax}</td>
             <td>{total}</td>
-            <td><p onClick={(e) => {
-                if (e.target.innerHTML.includes('Credit')) {
-                    e.target.innerHTML = 'Cash';
-                } else {
-                    e.target.innerHTML = 'Credit/Debit';
-                }
-            }} className="btn btn-warning">Credit/Debit</p></td>
-            <td>{date(saleDate)}</td>
-            <td>{time(saleDate)}</td>
         </tr>;
     }
 
@@ -69,17 +59,13 @@ export default class PendingSales extends Component {
                 <table id="pendingSales" className="table table-striped w-75" style={{margin: "1em auto"}}>
                     <thead className="thead thead-dark">
                         <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
                             <th>Service</th>
                             <th>Subtotal</th>
                             <th>Tax</th>
                             <th>Total</th>
-                            <th>Payment Method</th>
-                            <th>Date</th>
-                            <th>Time</th>
                         </tr>
                     </thead>
                     <tbody id="saleTable"></tbody>
