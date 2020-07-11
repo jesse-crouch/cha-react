@@ -93,10 +93,10 @@ export function addNonEventToCart(event, userAdded) {
         } else {
             nameRow.innerHTML = 'Membership - ' + event.name;
             var price = parseInt(event.price.split('/')[0]);
-            if (event.name === 'Yearly') {
-                price *= 12;
-            } else if (event.name === '6 Monthly') {
+            if (event.name === '6 Months') {
                 price *= 6;
+            } else if (event.name === '3 Months') {
+                price *= 3;
             }
             priceRow.innerHTML = price + '.00';
         }
