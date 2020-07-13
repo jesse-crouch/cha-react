@@ -109,7 +109,7 @@ export default class Account extends Component {
                 var firstName = result.payload.first_name.charAt(0).toUpperCase() + result.payload.first_name.substr(1);
                 var lastName = result.payload.last_name.charAt(0).toUpperCase() + result.payload.last_name.substr(1);
                 var activeActions = null, welcome = true;
-                if (result.payload.id === 4) {
+                if (result.payload.id === 2) {
                     activeActions = receptionActions;
                     welcome = false;
                 } else if (result.payload.admin) {
