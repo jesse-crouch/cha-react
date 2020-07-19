@@ -10,7 +10,7 @@ export default class Cart extends Component {
             for (var i in cart.items) {
                 var row = document.getElementById(cart.items[i].id + 'r');
                 console.log(row);
-                if (cart.items[i].type === 'nonevent') {
+                if (cart.items[i].type === 'nonevent' && cart.items[i].eventType !== 'multi') {
                     if (row === null) {
                         if (Cookies.get('token') !== undefined) {
                             addNonEventToCart(cart.items[i], false);

@@ -3,7 +3,8 @@ import $ from 'jquery';
 import { uuid } from 'uuidv4';
 import server from '../fetchServer';
 import Service from './Service';
-import { addSpecialToCart } from './cartMethods';
+import { addSpecialToCart, toggleCart } from './cartMethods';
+import { setReactContent, togglePopup } from './popupMethods';
 
 export default class Services extends Component {
     constructor() {
@@ -46,7 +47,29 @@ export default class Services extends Component {
                         }
                     });
                 } else {
-                    window.location.replace('/calendar?s=' + service.id);
+                    // Special case for multi events
+                    if (service.id === 63) {
+                        window.location.replace('/calendar?s=62&m=5&n=done-' + service.id);
+                    } else if (service.id === 64) {
+                        var ageContent = <div>
+                            <select id="ageSelect">
+                                <option>Please select the appropriate age group</option>
+                                <option>Tyke/Novice</option>
+                                <option>Atom/Peewee</option>
+                                <option>Bantam/Midget</option>
+                            </select>
+                        </div>;
+                        setReactContent('Select an Age Category', ageContent);
+                        togglePopup(true);
+
+                        var ageSelect = document.getElementById('ageSelect');
+                        ageSelect.addEventListener('change', () => {
+                            var ageGroup = ageSelect.selectedIndex + 15;
+                            window.location.replace('/calendar?s=19&m=1&n=' + ageGroup + '-' + service.id); 
+                        });
+                    } else {
+                        window.location.replace('/calendar?s=' + service.id);
+                    }
                 }
             }
         }, 500);
@@ -55,6 +78,7 @@ export default class Services extends Component {
     componentDidMount() {
         $.get(server + '/api/getAllServices', result => {
             if (!result.error) {
+                console.log(result);
                 this.setState(prevState => {
                     return {
                         level: 1,

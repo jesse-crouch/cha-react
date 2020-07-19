@@ -185,6 +185,7 @@ export default class CheckoutForm extends Component {
                                 } else {
                                     setPopupContent('Success', 'Your order has been received. Please be sure to arrive 10 minutes early to your bookings, thanks!');
                                     togglePopup(true);
+                                    Cookies.remove('multiBookings');
                                     setTimeout(() => {
                                         window.location.replace('/services');
                                     }, 3000);

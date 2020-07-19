@@ -67,12 +67,18 @@ export default class Checkout extends Component {
         var timeRow = document.createElement('td');
         var priceRow = document.createElement('td');
 
+        console.log(event);
+
         nameRow.innerHTML = event.name;
         if (event.name.length > 0) {
-            var start = new Date(event.epoch_date*1000);
-            var end = new Date(start.getTime());
-            end.setMinutes(end.getMinutes() + (60*event.duration));
-            timeRow.innerHTML = time(start) + ' - ' + time(end);
+            if (event.time === '') {
+                timeRow.innerHTML = '';
+            } else {
+                var start = new Date(event.epoch_date*1000);
+                var end = new Date(start.getTime());
+                end.setMinutes(end.getMinutes() + (60*event.duration));
+                timeRow.innerHTML = time(start) + ' - ' + time(end);
+            }
         } else {
             timeRow.innerHTML = event.time;
         }

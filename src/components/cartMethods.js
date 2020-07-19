@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import { FaArrowRight, FaShoppingCart } from 'react-icons/fa';
 import server from '../fetchServer';
+import { uuid } from 'uuidv4';
 
 export function toggleEmpty(isEmpty) {
     document.getElementById('emptyMsg').style.display = isEmpty ? '' : 'none';
@@ -51,6 +52,81 @@ export function addSpecialToCart(service) {
             if (!result.error) addToCart(result.event, true);
         });
     }
+}
+
+export function addMultiToCart(id, name, time, price) {
+    var itemID = uuid();
+
+    var cartBody = document.getElementById('cart-table');
+    var newRow = document.createElement('tr');
+    newRow.id = itemID + 'r';
+
+    var event = {
+        id: itemID + '-' + id,
+        name: name,
+        type: 'nonevent',
+        eventType: 'multi',
+        price: price,
+        time: time,
+        bookings: Cookies.get('multiBookings')
+    };
+
+    var nameRow = document.createElement('td');
+    var timeRow = document.createElement('td');
+    var priceRow = document.createElement('td');
+    var removeRow = document.createElement('td');
+
+    nameRow.innerHTML = name;
+    timeRow.innerHTML = time;
+    priceRow.innerHTML = parseFloat(price.split('/')[0]).toFixed(2);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-outline-danger';
+    removeBtn.innerHTML = 'x';
+    removeBtn.onclick = () => {
+        // Remove the row from the cart table, remove the multiBookings cookie, and remove from cart cookie
+        cartBody.removeChild(newRow);
+        Cookies.remove('multiBookings');
+        var cart = Cookies.getJSON('cart');
+        if (cart.items.length === 1) {
+            Cookies.remove('cart');
+            toggleCart();
+        } else {
+            for (var i in cart.items) {
+                if (cart.items[i].id === event.id) {
+                    cart.items.splice(i,1);
+                    Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
+                }
+            }
+        }
+    }
+    removeRow.appendChild(removeBtn);
+
+    newRow.appendChild(nameRow);
+    newRow.appendChild(timeRow);
+    newRow.appendChild(priceRow);
+    newRow.appendChild(removeRow);
+
+    cartBody.appendChild(newRow);
+
+    var cart = Cookies.getJSON('cart');
+    if (cart) {
+        // Cart exists, append new item
+        cart.items.push(event);
+        Cookies.set('cart', { items: cart.items }, { expires: 0.5 });
+
+        console.log(Cookies.getJSON('cart'));
+    } else {
+        var items = [];
+        items.push(event);
+        Cookies.set('cart', { items: items }, { expires: 0.5 });
+
+        console.log(Cookies.getJSON('cart'));
+    }
+
+    // Close the popup and open the cart
+    togglePopup(false);
+    toggleCart();
 }
 
 export function addNonEventToCart(event, userAdded) {
