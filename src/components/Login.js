@@ -106,6 +106,23 @@ export default class Login extends Component {
         window.location.replace('/register');
     }
 
+    resetPassword() {
+        var email = document.getElementById('loginEmail').value;
+        if (email.length > 0) {
+            $.post(server + '/api/resetPassword', { email: email }, result => {
+                if (result.error) {
+                    setPopupContent('Error', result.error);
+                    togglePopup(true);
+                } else {
+                    setPopupContent('Reset Password', 'An email has been sent to ' + email + '. Click on the link in the email to reset your password.');
+                    togglePopup(true);
+                }
+            });
+        } else {
+            document.getElementById('loginEmail').style.border = '1px solid red';
+        }
+    }
+
     componentDidMount() {
         document.getElementById('loginPassword').addEventListener('keypress', e => {
             if (e.key === 'Enter') {
@@ -143,6 +160,9 @@ export default class Login extends Component {
                     <div style={{textAlign: 'center'}}>
                         <button style={{width: '25%'}} className="btn btn-dark" onClick={this.login}>Login</button>
                         <button style={{width: '25%', marginLeft: '2%'}} className="btn btn-light" onClick={this.register}>Register</button>
+                    </div>
+                    <div style={{textAlign: 'center'}}>
+                        <button style={{width: '35%', marginLeft: '2%', marginTop: '2%'}} className="p" onClick={this.resetPassword}>Reset Password</button>
                     </div>
             </div>
         )
