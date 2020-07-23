@@ -106,7 +106,7 @@ export default class Reception extends Component {
         // Check for reception log in, otherwise show forbidden error and send to home page
         if (Cookies.get('token')) {
             $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
-                if (result.payload.id === 4 || result.payload.admin) {
+                if (result.payload.id === 2 || result.payload.admin) {
                     var content = <div>
                         <div className="labels text-center">
                             <h3 className="mt-3">Reception</h3>
