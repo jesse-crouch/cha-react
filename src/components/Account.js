@@ -79,6 +79,13 @@ export default class Account extends Component {
                     description="View bookings, and facilitate payments"
                     icon={<FaCalendarAlt />}
                     link="reception"
+                />,
+                <UserAction
+                    key={uuid()}
+                    title="View Schedule Data"
+                    description="View scheduled classes within a certain timeframe"
+                    icon={<FaCalendarAlt />}
+                    link="schedule-info"
                 />
             ];
             var receptionActions = [
