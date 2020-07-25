@@ -409,9 +409,9 @@ html {
   -ms-overflow-style: none;
 }
 
-.schedule-day::-webkit-scrollbar {
+/*.schedule-day::-webkit-scrollbar {
   display: none;
-}
+}*/
 
 .schedule-day p {
   background: black;

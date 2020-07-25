@@ -19,12 +19,12 @@ export default class Day extends Component {
 
     componentDidMount() {
         // Calculate the max events that the client can show before scrolling
-        var clientHeight = document.documentElement.clientHeight - document.getElementById('navbar').clientHeight;
+        /*var clientHeight = document.documentElement.clientHeight - document.getElementById('navbar').clientHeight;
         var dayHeight = document.getElementById('day-' + this.props.date).scrollHeight;
         console.log(clientHeight + ',' + dayHeight);
         if (dayHeight > clientHeight) {
-            setInterval(this.scroll, 100);
-        }
+            //setInterval(this.scroll, 100);
+        }*/
     }
 
     scroll() {
