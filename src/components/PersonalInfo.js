@@ -6,7 +6,7 @@ import { setPopupContent, togglePopup, setHTMLContent } from './popupMethods';
 import { date } from '../stringDate';
 
 var defaultFName = '', defaultLName = '', defaultEmail = '', defaultPhone = '';
-var children = [];
+//var children = [];
 
 export default class PersonalInfo extends Component {
     constructor() {
@@ -130,14 +130,14 @@ export default class PersonalInfo extends Component {
             }
         } else {
             if (window.confirm('Are you sure?')) {
-                var member = {
+                var _member = {
                     id: parseInt(event.target.getAttribute('member_id')),
                     first_name: event.target.getAttribute('member_name'),
                     membership: parseInt(event.target.getAttribute('member_membership'))
                 };
-                if (!isNaN(member.membership)) {
+                if (!isNaN(_member.membership)) {
                     if (window.confirm('This will cancel the membership associated with ' + this.formatName(member.first_name) + '.')) {
-                        $.post(server + '/api/removeSubUser', { id: member.id }, result => {
+                        $.post(server + '/api/removeSubUser', { id: _member.id }, result => {
                             if (result.error) {
                                 setPopupContent('Error', result.error);
                                 togglePopup(true);
@@ -147,7 +147,7 @@ export default class PersonalInfo extends Component {
                         });
                     }
                 } else {
-                    $.post(server + '/api/removeSubUser', { id: member.id }, result => {
+                    $.post(server + '/api/removeSubUser', { id: _member.id }, result => {
                         if (result.error) {
                             setPopupContent('Error', result.error);
                             togglePopup(true);
@@ -239,11 +239,13 @@ export default class PersonalInfo extends Component {
                         var member = memberResult.members[i];
                         var newRow = document.createElement('tr');
 
+                        // Fields that may be used
+                        var newMemberInput = document.createElement('input');
+
                         var firstNameData = document.createElement('td');
                         if (i < memberResult.members.length) {
                             firstNameData.innerHTML = this.formatName(member.first_name);
                         } else {
-                            var newMemberInput = document.createElement('input');
                             newMemberInput.placeholder = 'Enter a new person';
                             newMemberInput.style.width = '80%';
                             firstNameData.appendChild(newMemberInput);
@@ -253,7 +255,6 @@ export default class PersonalInfo extends Component {
                         if (i < memberResult.members.length) {
                             lastNameData.innerHTML = this.formatName(member.last_name);
                         } else {
-                            var newMemberInput = document.createElement('input');
                             newMemberInput.style.width = '80%';
                             lastNameData.appendChild(newMemberInput);
                         }
@@ -285,6 +286,7 @@ export default class PersonalInfo extends Component {
                             actionBtn.className = 'btn btn-primary';
                             actionBtn.innerHTML = '+';
                             actionBtn.style.fontSize = '150%';
+                            // eslint-disable-next-line
                             actionBtn.addEventListener('click', (e) => this.handleAddRemoveMember(e, result.payload.id, {
                                 first_name: firstNameData.children[0].value,
                                 last_name: lastNameData.children[0].value

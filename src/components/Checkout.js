@@ -40,6 +40,7 @@ export default class Checkout extends Component {
         // Add subtotal, tax, and total rows
         var tax = subtotal*0.13;
         total = Number.parseFloat(subtotal) + Number.parseFloat(tax);
+        //total = 0;
         this.addRow({
             name: '',
             time: 'Subtotal',
@@ -100,8 +101,10 @@ export default class Checkout extends Component {
                 var price = parseInt(event.price.split('/')[0]);
                 if (event.id === 2) {
                     price *= 6;
+                    event.price = price + '/month';
                 } else if (event.id === 3) {
                     price *= 12;
+                    event.price = price + '/month';
                 }
                 priceRow.innerHTML = price + '.00';
             }

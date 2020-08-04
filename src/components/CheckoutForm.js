@@ -55,8 +55,11 @@ export default class CheckoutForm extends Component {
 
     handlePayCheck(event) {
         // Display or hide the stripe form
-        document.getElementById('paymentForm').style.display = event.target.checked ? 'none' : '';
-        document.getElementById('paySubmitBtn').style.display = event.target.checked ? '' : 'none';
+        var paymentForm = document.getElementById('paymentForm');
+        var paySubmitBtn = document.getElementById('paySubmitBtn');
+
+        if (paymentForm === null) paymentForm.style.display = event.target.checked ? 'none' : '';
+        if (paySubmitBtn === null) paySubmitBtn.style.display = event.target.checked ? '' : 'none';
     }
 
     handleSubmit() {
@@ -187,6 +190,11 @@ export default class CheckoutForm extends Component {
                                     togglePopup(true);
                                     Cookies.remove('multiBookings');
                                     setTimeout(() => {
+                                        // Check for new token
+                                        if (result.token !== null) {
+                                            Cookies.set('token', result.token);
+                                        }
+
                                         window.location.replace('/services');
                                     }, 3000);
                                 }

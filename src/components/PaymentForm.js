@@ -166,6 +166,11 @@ export default function PaymentForm(props) {
                                                 togglePopup(true);
                                                 Cookies.remove('multiBookings');
                                                 setTimeout(() => {
+                                                    // Check for new token
+                                                    if (result.token !== null) {
+                                                        Cookies.set('token', result.token);
+                                                    }
+                                                    
                                                     window.location.replace('/services');
                                                 }, 3000);
                     

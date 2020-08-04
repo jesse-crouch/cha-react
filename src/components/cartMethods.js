@@ -165,6 +165,7 @@ export function addNonEventToCart(event, userAdded) {
         if (event.cancel) {
             nameRow.innerHTML = 'Cancel Membership';
             priceRow.innerHTML = '0.00';
+            event.price = '0/month';
             event.cancelling = true;
         } else {
             nameRow.innerHTML = 'Membership - ' + event.name;

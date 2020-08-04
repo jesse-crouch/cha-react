@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { uuid } from 'uuidv4';
 import server from '../fetchServer';
 import Service from './Service';
-import { addSpecialToCart, toggleCart } from './cartMethods';
+import { addSpecialToCart } from './cartMethods';
 import { setReactContent, togglePopup } from './popupMethods';
 
 export default class Services extends Component {

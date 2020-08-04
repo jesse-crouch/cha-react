@@ -3,9 +3,9 @@ import server from '../fetchServer';
 import $ from 'jquery';
 import Day from './Day';
 import { uuid } from 'uuidv4';
-import { togglePopup, setPopupContent, setEventContent, setDOMContent, setReactContent } from './popupMethods';
+import { togglePopup, setPopupContent, setEventContent, setReactContent } from './popupMethods';
 import monthNames from '../months';
-import { addToCart, addSpecialToCart, addNonEventToCart, addMultiToCart, toggleCart } from './cartMethods';
+import { addToCart, addMultiToCart } from './cartMethods';
 import Cookies from 'js-cookie';
 
 var multiCookie = Cookies.getJSON('multiBookings');

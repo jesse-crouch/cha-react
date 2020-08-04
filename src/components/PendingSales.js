@@ -5,7 +5,7 @@ import { togglePopup, setPopupContent } from './popupMethods';
 import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { uuid } from 'uuidv4';
-import { date, time } from '../stringDate';
+import { date } from '../stringDate';
 
 export default class PendingSales extends Component {
     componentDidMount() {
@@ -38,7 +38,7 @@ export default class PendingSales extends Component {
         var total = sale.price.toFixed(2);
         var subtotal = (total / 1.13).toFixed(2);
         var tax = (subtotal * 0.13).toFixed(2);
-        var saleDate = new Date(sale.epoch_date*1000);
+        //var saleDate = new Date(sale.epoch_date*1000);
 
         return <tr id={'r-' + sale.id} key={uuid()}>
             <td>{sale.first_name + ' ' + sale.last_name}</td>
