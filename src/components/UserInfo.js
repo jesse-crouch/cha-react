@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import server from '../fetchServer'
-import { togglePopup, setPopupContent } from './popupMethods';
+import { togglePopup, setPopupContent, setReactContent } from './popupMethods';
 import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { uuid } from 'uuidv4';
@@ -35,9 +35,27 @@ export default class UserInfo extends Component {
             membership = '';
         }
 
-        var expiry = user.membership_expiry != null ?
-            date(new Date(user.membership_expiry)) :
-            '';
+        var expiry = '';
+        if (user.membership_expiry != null) {
+            expiry = <button className="btn btn-primary" onClick={() => {
+                setReactContent('Change Date', <div><input type="date"></input><button onClick={(e) => {
+                    var newDate = new Date(e.target.parentElement.children[0].value);
+                    $.post(server + '/api/setMembershipExpiry', {
+                        id: user.id,
+                        expiry: newDate.getTime()/1000
+                    }, result => {
+                        if (result.error) {
+                            togglePopup(false);
+                            setPopupContent('Error', result.error);
+                            togglePopup(true);
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }} className="btn btn-primary">Change</button></div>);
+                togglePopup(true);
+            }}>{date(new Date(user.membership_expiry))}</button>;
+        }
         var join_date = user.join_date != null ?
             date(new Date(user.join_date)) :
             '';
