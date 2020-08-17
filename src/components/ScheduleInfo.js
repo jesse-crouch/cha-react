@@ -21,8 +21,8 @@ export default class ScheduleInfo extends Component {
         var startDateInput = document.getElementById('startDateField').value.split('-');
         var endDateInput = document.getElementById('endDateField').value.split('-');
 
-        var startDate = new Date(startDateInput[0], startDateInput[1], startDateInput[2], 5,0,0,0);
-        var endDate = new Date(endDateInput[0], endDateInput[1], endDateInput[2], 5,0,0,0);
+        var startDate = new Date(startDateInput[0], parseInt(startDateInput[1])-1, startDateInput[2], 5,0,0,0);
+        var endDate = new Date(endDateInput[0], parseInt(endDateInput[1])-1, endDateInput[2], 5,0,0,0);
 
         $.post(server + '/api/getEventsAdmin', {
             startDate: startDate.getTime()/1000,

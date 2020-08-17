@@ -58,8 +58,8 @@ export default class CheckoutForm extends Component {
         var paymentForm = document.getElementById('paymentForm');
         var paySubmitBtn = document.getElementById('paySubmitBtn');
 
-        if (paymentForm === null) paymentForm.style.display = event.target.checked ? 'none' : '';
-        if (paySubmitBtn === null) paySubmitBtn.style.display = event.target.checked ? '' : 'none';
+        if (paymentForm !== null) paymentForm.style.display = event.target.checked ? 'none' : '';
+        if (paySubmitBtn !== null) paySubmitBtn.style.display = event.target.checked ? '' : 'none';
     }
 
     handleSubmit() {

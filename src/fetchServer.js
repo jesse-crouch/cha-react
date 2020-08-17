@@ -1,2 +1,3 @@
-var server = 'http://localhost:5460';
+var server = 'https://cosgrovehockeyacademy.com:5460';
 export default server;
+
