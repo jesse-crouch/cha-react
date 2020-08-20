@@ -65,7 +65,11 @@ export default class UserInfo extends Component {
                 togglePopup(true);
             }}>1 Year</button>;
         } else {
-            membership = '';
+            membership = <button className="btn btn-primary" onClick={() => {
+                setReactContent('Change Membership', memberSelect);
+                document.getElementById('memberSelect').selectedIndex = user.membership;
+                togglePopup(true);
+            }}>No Membership</button>;
         }
 
         var expiry = '';
