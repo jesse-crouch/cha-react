@@ -65,7 +65,7 @@ export default class UserInfo extends Component {
                 togglePopup(true);
             }}>1 Year</button>;
         } else {
-            membership = <button className="btn btn-primary" onClick={() => {
+            membership = <button className="btn btn-secondary" onClick={() => {
                 setReactContent('Change Membership', memberSelect);
                 document.getElementById('memberSelect').selectedIndex = user.membership;
                 togglePopup(true);
