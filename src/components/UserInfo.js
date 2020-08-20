@@ -25,12 +25,45 @@ export default class UserInfo extends Component {
 
     newRow(user) {
         var membership = '';
+        var memberSelect = <div>
+            <select id="memberSelect" onChange={() => {
+                $.post(server + '/api/changeMembership', {
+                    id: user.id,
+                    membership: document.getElementById('memberSelect').selectedIndex
+                }, result => {
+                    if (result.error) {
+                        togglePopup(false);
+                        setPopupContent('Error', result.error);
+                        togglePopup(true);
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            }}>
+                <option>No Membership</option>
+                <option>Monthly</option>
+                <option>6 Months</option>
+                <option>1 Year</option>
+            </select>
+        </div>
         if (user.membership === 1) {
-            membership = 'Monthly';
+            membership = <button className="btn btn-primary" onClick={() => {
+                setReactContent('Change Membership', memberSelect);
+                document.getElementById('memberSelect').selectedIndex = user.membership;
+                togglePopup(true);
+            }}>Monthly</button>;
         } else if (user.membership === 2) {
-            membership = '6 Months';
+            membership = <button className="btn btn-primary" onClick={() => {
+                setReactContent('Change Membership', memberSelect);
+                document.getElementById('memberSelect').selectedIndex = user.membership;
+                togglePopup(true);
+            }}>6 Months</button>;
         } else if (user.membership === 3) {
-            membership = 'Annual';
+            membership = <button className="btn btn-primary" onClick={() => {
+                setReactContent('Change Membership', memberSelect);
+                document.getElementById('memberSelect').selectedIndex = user.membership;
+                togglePopup(true);
+            }}>1 Year</button>;
         } else {
             membership = '';
         }
