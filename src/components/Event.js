@@ -53,12 +53,17 @@ export default function Event(props) {
     }
     if (props.event.name === 'Class') {
         className = 'event btn btn-dark my-1';
-        disabled = true
+        disabled = true;
+    }
+    if (props.event.name === 'Unavailable') {
+        className = 'event btn btn-dark my-1';
+        disabled = true;
     }
 
     var buttonText = time(start) + ' - ' + time(end);
     if (props.event.open_spots === 0) buttonText = 'Booked';
     if (props.event.name === 'Class') buttonText = 'Class Booked';
+    if (props.event.name === 'Unavailable') buttonText = 'Unavailable';
 
     return (
         <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: background}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>

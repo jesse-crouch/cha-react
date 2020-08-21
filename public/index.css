@@ -323,11 +323,28 @@ html {
   padding-bottom: 0;
 }
 
+#btnFixedDiv {
+    position: fixed;
+    bottom: 5%;
+    left: 5%;
+}
+
+#btnFixedDiv button {
+    font-size: 135%;
+}
+
 #addEventFixedBtn {
   position: fixed;
   bottom: 5%;
   font-size: 135%;
   left: 5%;
+}
+
+#addBlockedFixedBtn {
+    position: fixed;
+    bottom: 5%;
+    font-size: 135%;
+    left: 12%;
 }
 
 #reception-div {

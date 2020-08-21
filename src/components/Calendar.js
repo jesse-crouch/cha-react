@@ -85,111 +85,164 @@ export default class Calendar extends Component {
                     conflicts[conflictDate.getDay()].push(result.largeEvents[q]);
                 }
 
+                // Sort blocked times into days
+                var blocked_times = [[],[],[],[],[],[],[]];
+                for (var r in result.blocked_times) {
+                    var blockedDate = new Date(result.blocked_times[r].epoch_date);
+                    blocked_times[blockedDate.getDay()].push(result.blocked_times[r]);
+                }
+
                 for (var i=0; i<7; i++) {
                     var events = [];
-                    for (var j in result.events) {
-                        const eventDate = new Date(result.events[j].epoch_date*1000);
-                        if (eventDate.getDay() === i) {
-                            // Check for conflicting events
-                            var conflict = false;
-                            // eslint-disable-next-line
-                            for (var q in conflicts[eventDate.getDay()]) {
-                                // eslint-disable-next-line
-                                var conflictEvent = conflicts[eventDate.getDay()][q];
-                                // eslint-disable-next-line
-                                var conflictDate = new Date(conflictEvent.epoch_date*1000);
-                                if (conflictDate.getUTCHours() === eventDate.getUTCHours() && conflictDate.getUTCMinutes() === eventDate.getUTCMinutes()) {
-                                    // Conflict
-                                    conflict = true;
-                                    result.events[j].name = 'Unavailabe';
-                                    events.push(result.events[j]);
-                                }
-                            }
-                            if (!conflict) events.push(result.events[j]);
+
+                    var blocked = false;
+                    // Check if this day is blocked
+                    for (var t in result.blocked_days) {
+                        var blockedDate = new Date(result.blocked_days[t].epoch_date);
+                        if (blockedDate.getDay() === i) {
+                            blocked = true;
                         }
                     }
 
-                    if (result.service_info.type === 'open') {
-                        // Adding ghost events for open services
-                        // Business hours - Weekdays (12 PM - 8 PM), Weekends (9 AM - 5 PM)
-                        var open_time = 0, close_time = 0;
-                        if (i === 0 || i === 6) {
-                            open_time = 9;
-                            close_time = 17;
-                        } else {
-                            open_time = 12;
-                            close_time = 20;
-                        }
-			var closed = [new Date(2020, 6, 18), new Date(2020, 6, 19), new Date(2020, 6, 20)];
-
-                        var trackDate = new Date(date.getTime());
-                        trackDate.setUTCHours(open_time,0,0,0);
-                        for (var k=0; k<((close_time - open_time) / result.service_info.duration); k++) {
-                            var spots = result.service_info.spots;
-				var noEvents = false;
-				for (var z in closed) {
-					if (closed[z].getFullYear() === trackDate.getFullYear() &&
-					    closed[z].getMonth() === trackDate.getMonth() &&
-					    closed[z].getDate() === trackDate.getDate()) {
-						noEvents = true;
-						if (closed[z].getDate() === 18) {
-							if (trackDate.getUTCHours() >= 13 && trackDate.getUTCHours() < 17) {
-								noEvents = false;
-							}
-						}
-					}
-				}
-
-			    if (!noEvents) {
-                            // Ghost event built using service and event defaults
-                            var event = {
-                                id: 'i-' + eventNum,
-                                name: result.service_info.name,
-                                duration: result.service_info.duration,
-                                service_id: result.service_info.id,
-                                price: result.service_info.price,
-                                epoch_date: trackDate.getTime() / 1000,
-                                open_spots: spots,
-                                total_spots: result.service_info.spots,
-                                instructor_name: result.service_info.instructor_name,
-                                type: 'open'
-                            };
-
-                            // Check for resource conflict
-                            // eslint-disable-next-line
-                            var conflict = false;
-                            // eslint-disable-next-line
-                            for (var q in conflicts[trackDate.getDay()]) {
+                    if (!blocked) {
+                        for (var j in result.events) {
+                            const eventDate = new Date(result.events[j].epoch_date*1000);
+                            if (eventDate.getDay() === i) {
+                                // Check for conflicting events
+                                var conflict = false;
                                 // eslint-disable-next-line
-                                var conflictEvent = conflicts[trackDate.getDay()][q];
-                                // eslint-disable-next-line
-                                var conflictDate = new Date(conflictEvent.epoch_date*1000);
-                                if (conflictDate.getUTCHours() === trackDate.getUTCHours() && conflictDate.getUTCMinutes() === trackDate.getUTCMinutes()) {
-                                    // Check for duplicates
-                                    for (var r in events) {
-                                        //console.log(events[r].epoch + ' === ' + conflictDate);
-                                        if (events[r].epoch_date === conflictDate.getTime()/1000) {
-                                            events.splice(r,1);
-                                        }
+                                for (var q in conflicts[eventDate.getDay()]) {
+                                    // eslint-disable-next-line
+                                    var conflictEvent = conflicts[eventDate.getDay()][q];
+                                    // eslint-disable-next-line
+                                    var conflictDate = new Date(conflictEvent.epoch_date*1000);
+                                    if (conflictDate.getUTCHours() === eventDate.getUTCHours() && conflictDate.getUTCMinutes() === eventDate.getUTCMinutes()) {
+                                        // Conflict
+                                        conflict = true;
+                                        result.events[j].name = 'Unavailable';
+                                        events.push(result.events[j]);
                                     }
+                                }
 
-                                    // Conflict
-                                    conflict = true;
-                                    event.name = 'Class';
-                                    events.push(event);
+                                // Check for blocked time
+                                for (var u in blocked_times[i]) {
+                                    var eventStart = eventDate.getTime();
+                                    var eventEnd = eventStart + (1000*60*60*result.events[j].duration);
+                                    var blockedStart = new Date(blocked_times[i][u].epoch_date).getTime();
+                                    var blockedEnd = blockedStart + (1000*60*60*blocked_times[i][u].duration);
+
+                                    if ((eventStart === blockedStart && eventEnd === blockedEnd)
+                                        || (eventStart > blockedStart && eventStart < blockedEnd)
+                                        || (eventEnd > blockedStart && eventEnd < blockedEnd)
+                                    ) {
+                                        // Conflict
+                                        conflict = true;
+                                        result.events[j].name = 'Unavailable';
+                                        events.push(result.events[j]);
+                                    }
+                                }
+
+                                if (!conflict) events.push(result.events[j]);
+                            }
+                        }
+
+                        if (result.service_info.type === 'open') {
+                            // Adding ghost events for open services
+                            // Business hours - Weekdays (12 PM - 8 PM), Weekends (9 AM - 5 PM)
+                            var open_time = 0, close_time = 0;
+                            if ((date.getMonth() >= 8 && date.getDate() >= 6)
+                                || (date.getMonth() <= 5 && date.getDate() < 25)
+                            ) {
+                                if (i === 0) {
+                                    open_time = 9;
+                                    close_time = 17;
+                                } else if (i === 6) {
+                                    open_time = 9;
+                                    close_time = 19;
+                                } else {
+                                    open_time = 16;
+                                    close_time = 21;
+                                }
+                            } else {
+                                if (i === 0 || i === 6) {
+                                    open_time = 9;
+                                    close_time = 17;
+                                } else {
+                                    open_time = 12;
+                                    close_time = 20;
                                 }
                             }
 
-                            trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
-                            // Check that this event won't exceed the closing time
-                            if (trackDate.getUTCHours() <= close_time && !conflict) {
-                                events.push(event);
+                            var trackDate = new Date(date.getTime());
+                            trackDate.setUTCHours(open_time,0,0,0);
+                            for (var k=0; k<((close_time - open_time) / result.service_info.duration); k++) {
+                                var spots = result.service_info.spots;
+
+                                // Ghost event built using service and event defaults
+                                var event = {
+                                    id: 'i-' + eventNum,
+                                    name: result.service_info.name,
+                                    duration: result.service_info.duration,
+                                    service_id: result.service_info.id,
+                                    price: result.service_info.price,
+                                    epoch_date: trackDate.getTime() / 1000,
+                                    open_spots: spots,
+                                    total_spots: result.service_info.spots,
+                                    instructor_name: result.service_info.instructor_name,
+                                    type: 'open'
+                                };
+
+                                // Check for resource conflict
+                                // eslint-disable-next-line
+                                var conflict = false;
+                                // eslint-disable-next-line
+                                for (var q in conflicts[trackDate.getDay()]) {
+                                    // eslint-disable-next-line
+                                    var conflictEvent = conflicts[trackDate.getDay()][q];
+                                    // eslint-disable-next-line
+                                    var conflictDate = new Date(conflictEvent.epoch_date*1000);
+                                    if (conflictDate.getUTCHours() === trackDate.getUTCHours() && conflictDate.getUTCMinutes() === trackDate.getUTCMinutes()) {
+                                        // Check for duplicates
+                                        for (var r in events) {
+                                            //console.log(events[r].epoch + ' === ' + conflictDate);
+                                            if (events[r].epoch_date === conflictDate.getTime()/1000) {
+                                                events.splice(r,1);
+                                            }
+                                        }
+
+                                        // Conflict
+                                        conflict = true;
+                                        event.name = 'Class';
+                                        events.push(event);
+                                    }
+                                }
+
+                                // Check for blocked time
+                                for (var u in blocked_times[i]) {
+                                    var eventStart = trackDate.getTime();
+                                    var eventEnd = eventStart + (1000*60*60*event.duration);
+                                    var blockedStart = new Date(blocked_times[i][u].epoch_date).getTime();
+                                    var blockedEnd = blockedStart + (1000*60*60*blocked_times[i][u].duration);
+
+                                    if ((eventStart === blockedStart && eventEnd === blockedEnd)
+                                        || (eventStart > blockedStart && eventStart < blockedEnd)
+                                        || (eventEnd > blockedStart && eventEnd < blockedEnd)
+                                    ) {
+                                        // Conflict
+                                        conflict = true;
+                                        event.name = 'Unavailable';
+                                        events.push(event);
+                                    }
+                                }
+
+                                trackDate.setMinutes(trackDate.getMinutes() + (60*event.duration));
+                                // Check that this event won't exceed the closing time
+                                if (trackDate.getUTCHours() <= close_time && !conflict) {
+                                    events.push(event);
+                                }
+                                eventNum++;
                             }
-                            eventNum++;
-                        } else {
-				            trackDate.setMinutes(trackDate.getMinutes() + (60*result.service_info.duration));
-			            }
-			        }
+                        }
                     }
                     days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={false} />);
                     date.setDate(date.getDate() + 1);

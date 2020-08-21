@@ -6,6 +6,7 @@ import $ from 'jquery';
 import Day from './Day';
 import { uuid } from 'uuidv4';
 import AddEvent from './AddEvent';
+import BlockTime from './BlockTime';
 
 export default class EventManager extends Component {
     constructor() {
@@ -123,6 +124,11 @@ export default class EventManager extends Component {
         togglePopup(true);
     }
 
+    handleAddBlock() {
+        setReactContent('Block a Time', <BlockTime />);
+        togglePopup(true);
+    }
+
     render() {
         return (
             <div id="calendar" style={{position: 'relative', transition: 'all 0.5s'}}>
@@ -134,7 +140,10 @@ export default class EventManager extends Component {
                 <div id="week" className="week" style={{height: '82vh'}}>
                     {this.state.days}
                 </div>
-                <button id="addEventFixedBtn" className="btn btn-primary" onClick={this.handleAddEvent}>Add Event</button>
+                <div id="btnFixedDiv">
+                    <button className="btn btn-primary mx-1" onClick={this.handleAddEvent}>Add Event</button>
+                    <button className="btn btn-danger mx-1" onClick={this.handleAddBlock}>Block a Time</button>
+                </div>
             </div>
         )
     }
