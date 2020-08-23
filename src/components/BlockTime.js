@@ -53,7 +53,7 @@ export default class BlockTime extends Component {
         document.getElementById('addBlockBtn').addEventListener('click', () => {
             var dateInfo = dateInput.value.split('-');
             var startInfo = startSelect.options[startSelect.selectedIndex].getAttribute('timeInfo').split(',');
-            var date = new Date(parseInt(dateInfo[0]), parseInt(dateInfo[1])-1, parseInt(dateInfo[2]), parseInt(startInfo[0]), parseInt(startInfo[1]));
+            var date = new Date(Date.UTC(parseInt(dateInfo[0]), parseInt(dateInfo[1])-1, parseInt(dateInfo[2]), parseInt(startInfo[0]), parseInt(startInfo[1])));
             if (dayCheck.checked) {
                 // Block the day
                 $.post(server + '/api/blockTime', { date: date.getTime()/1000, duration: 100 }, result => {
