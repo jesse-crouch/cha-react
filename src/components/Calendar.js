@@ -99,7 +99,9 @@ export default class Calendar extends Component {
                     // Check if this day is blocked
                     for (var t in result.blocked_days) {
                         var blockedDate = new Date(result.blocked_days[t].epoch_date);
-                        if (blockedDate.getDay() === i) {
+                        if ((blockedDate.getDate() === date.getDate())
+                            && (blockedDate.getMonth() === date.getMonth())
+                            && (blockedDate.getFullYear() === date.getFullYear())) {
                             blocked = true;
                         }
                     }
