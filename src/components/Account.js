@@ -103,6 +103,13 @@ export default class Account extends Component {
                     icon={<FaDollarSign />}
                     link="drop-in"
                 />,
+		<UserAction
+                    key={uuid()}
+                    title="View Users"
+                    description="View all of your current registered and unregistered users"
+                    icon={<FaUser />}
+                    link="users-info"
+                />,
                 <UserAction
                     key={uuid()}
                     title="Clock In/Out"

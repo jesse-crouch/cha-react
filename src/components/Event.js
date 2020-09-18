@@ -7,7 +7,7 @@ export default function Event(props) {
     const end = new Date(start.getTime());
     var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
     end.setUTCMinutes(end.getUTCMinutes() + (duration*60));
-    const height = (4.2*duration) + 'em';
+    const height = (5*duration) + 'em';
 
     // Check if this event is in the past if unmanaged
     var display = '';

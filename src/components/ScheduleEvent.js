@@ -8,7 +8,7 @@ export default function Event(props) {
     const end = new Date(start.getTime());
     var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
     end.setUTCMinutes(end.getUTCMinutes() + (duration*60));
-    const height = (5.5*duration) + 'em';
+    const height = (7*duration) + 'em';
 
     var className = 'event btn btn-';
     className += 'primary my-1';

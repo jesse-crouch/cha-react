@@ -42,8 +42,8 @@ export default class UserInfo extends Component {
             }}>
                 <option>No Membership</option>
                 <option>Monthly</option>
-                <option>3 Months</option>
                 <option>6 Months</option>
+                <option>1 Year</option>
             </select>
         </div>
         if (user.membership === 1) {
@@ -51,19 +51,19 @@ export default class UserInfo extends Component {
                 setReactContent('Change Membership', memberSelect);
                 document.getElementById('memberSelect').selectedIndex = user.membership;
                 togglePopup(true);
-            }}>1 Month</button>;
+            }}>Monthly</button>;
         } else if (user.membership === 2) {
             membership = <button className="btn btn-primary" onClick={() => {
                 setReactContent('Change Membership', memberSelect);
                 document.getElementById('memberSelect').selectedIndex = user.membership;
                 togglePopup(true);
-            }}>3 Months</button>;
+            }}>6 Months</button>;
         } else if (user.membership === 3) {
             membership = <button className="btn btn-primary" onClick={() => {
                 setReactContent('Change Membership', memberSelect);
                 document.getElementById('memberSelect').selectedIndex = user.membership;
                 togglePopup(true);
-            }}>6 Months</button>;
+            }}>1 Year</button>;
         } else {
             membership = <button className="btn btn-secondary" onClick={() => {
                 setReactContent('Change Membership', memberSelect);
@@ -113,6 +113,11 @@ export default class UserInfo extends Component {
         return (
             <div className="text-center">
                 <h3 style={{margin: "1em"}}>Users Information</h3>
+		<div id="salesFields">
+                    <input placeholder="First Name" id="fNameInput" className="form-control sales-in$
+                    <input placeholder="Last Name" id="lNameInput" className="form-control sa$
+                    <input placeholder="Email" id="emailInput" className="form-control sales-input" onchange={this.filterTable}
+                </div>
                 <table className="table table-striped w-75" style={{margin: "0 auto"}}>
                     <thead className="thead thead-dark">
                         <tr>

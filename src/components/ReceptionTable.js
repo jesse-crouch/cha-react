@@ -3,6 +3,7 @@ import { time } from '../stringDate';
 import server from '../fetchServer';
 import { setPopupContent, togglePopup } from './popupMethods';
 import $ from 'jquery';
+import { uuid } from 'uuidv4';
 
 export default class ReceptionTable extends Component {
     constructor(props) {
@@ -13,15 +14,18 @@ export default class ReceptionTable extends Component {
         };
     }
 
-    handleDelete(id) {
+    handleDelete(id, rowID) {
         if (window.confirm('Are you sure?')) {
             $.post(server + '/api/deleteBooking', { id: id }, result => {
                 if (!result.error) {
-                    togglePopup(false);
-                    setPopupContent('Success', 'Booking deleted, refreshing shortly...');
-                    togglePopup(true);
+                    //togglePopup(false);
+                    //setPopupContent('Success', 'Booking deleted');
+                    //togglePopup(true);
+			console.log(rowID);
+			document.getElementById(rowID).style.display = 'none';
                     setTimeout(() => {
-                        window.location.reload();
+                       // window.location.reload();
+			//togglePopup(false);
                     }, 2000);
                 } else {
                     togglePopup(false);
@@ -43,8 +47,9 @@ export default class ReceptionTable extends Component {
         end.setUTCMinutes(end.getUTCMinutes() + (60*booking.duration));
 
 	var display = booking.amount_due === 0 ? 'none' : '';
+	var rowID = uuid();
 
-        return <tr>
+        return <tr id={rowID}>
             <td>{booking.first_name}</td>
             <td>{booking.last_name}</td>
             <td>{booking.email}</td>
@@ -55,7 +60,7 @@ export default class ReceptionTable extends Component {
             <td>{start.toLocaleDateString() + ' at ' + time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>
             <td><button className="btn btn-primary" style={{display: display}} onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
-            <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id)}>Delete</button></td>
+            <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id, rowID)}>Delete</button></td>
         </tr>;
     }
 
