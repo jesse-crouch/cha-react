@@ -100,10 +100,10 @@ export default class Checkout extends Component {
             } else {
                 var price = parseInt(event.price.split('/')[0]);
                 if (event.id === 2) {
-                    price *= 6;
+                    price *= 3;
                     event.price = price + '/month';
                 } else if (event.id === 3) {
-                    price *= 12;
+                    price *= 6;
                     event.price = price + '/month';
                 }
                 priceRow.innerHTML = price + '.00';
