@@ -98,6 +98,7 @@ export default class Calendar extends Component {
                     var blocked = false;
                     // Check if this day is blocked
                     for (var t in result.blocked_days) {
+                        // eslint-disable-next-line
                         var blockedDate = new Date(result.blocked_days[t].epoch_date);
                         if ((blockedDate.getDate() === date.getDate())
                             && (blockedDate.getMonth() === date.getMonth())
@@ -205,6 +206,7 @@ export default class Calendar extends Component {
                                     var conflictDate = new Date(conflictEvent.epoch_date*1000);
                                     if (conflictDate.getUTCHours() === trackDate.getUTCHours() && conflictDate.getUTCMinutes() === trackDate.getUTCMinutes()) {
                                         // Check for duplicates
+                                        // eslint-disable-next-line
                                         for (var r in events) {
                                             //console.log(events[r].epoch + ' === ' + conflictDate);
                                             if (events[r].epoch_date === conflictDate.getTime()/1000) {
@@ -220,10 +222,15 @@ export default class Calendar extends Component {
                                 }
 
                                 // Check for blocked time
+                                // eslint-disable-next-line
                                 for (var u in blocked_times[i]) {
+                                    // eslint-disable-next-line
                                     var eventStart = trackDate.getTime();
+                                    // eslint-disable-next-line
                                     var eventEnd = eventStart + (1000*60*60*event.duration);
+                                    // eslint-disable-next-line
                                     var blockedStart = new Date(blocked_times[i][u].epoch_date).getTime();
+                                    // eslint-disable-next-line
                                     var blockedEnd = blockedStart + (1000*60*60*blocked_times[i][u].duration);
 
                                     if ((eventStart === blockedStart && eventEnd === blockedEnd)
