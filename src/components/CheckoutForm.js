@@ -31,10 +31,11 @@ export default class CheckoutForm extends Component {
                                 <PaymentForm clientSecret={clientSecret} amountDue={this.props.amount} />
                             </Elements>;
             ReactDOM.render(elements, document.getElementById('payment-form'), () => {
-                document.getElementById('submitBtn').style.display = '';
+                //document.getElementById('submitBtn').style.display = '';
                 if (Cookies.get('token')) {
                     $.post(server + '/api/getPayload', { token: Cookies.get('token') }, result => {
                         payload = result.payload;
+			document.getElementById('submitBtn').style.display = '';
                     });
 
                     var divs = document.getElementsByClassName('non-user');
@@ -43,7 +44,9 @@ export default class CheckoutForm extends Component {
                             divs[i].style.display = 'none';
                         }
                     }
-                }
+                } else {
+			document.getElementById('submitBtn').style.display = '';
+		}
             });
         });
     }
