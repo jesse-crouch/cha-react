@@ -94,6 +94,7 @@ export default class EventManager extends Component {
     updateWeek() {
         document.getElementById('calendar').style.opacity = 0;
         $.post(server + '/api/getEventManagerEvents', { date: this.state.currentDate.getTime() }, result => {
+            console.log(result);
             var days = [];
             var date = this.state.currentDate;
             date.setDate(date.getDate() - date.getDay());

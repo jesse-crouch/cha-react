@@ -4,6 +4,7 @@ import server from '../fetchServer';
 import { setPopupContent, togglePopup } from './popupMethods';
 import $ from 'jquery';
 import { uuid } from 'uuidv4';
+import CovidScreening from './CovidScreening';
 
 export default class ReceptionTable extends Component {
     constructor(props) {
@@ -41,13 +42,22 @@ export default class ReceptionTable extends Component {
         $.post(server + '/api/updatePaidBooking', { id: id });
     }
 
+    handleCovid(event, id) {
+        togglePopup(false);
+        setPopupContent('COVID Screening', <CovidScreening id={id} />);
+        togglePopup(true);
+    }
+
     bookingToRow(booking) {
         var start = new Date(booking.epoch_date*1000);
         var end = new Date(booking.epoch_date*1000);
         end.setUTCMinutes(end.getUTCMinutes() + (60*booking.duration));
 
-	var display = booking.amount_due === 0 ? 'none' : '';
-	var rowID = uuid();
+        var paidDisplay = booking.amount_due === 0 ? 'none' : '';
+        console.log(booking.covid_screened);
+        var covidDisplay = booking.covid_screened === true ? 'none' : '';
+        alert(covidDisplay);
+        var rowID = uuid();
 
         return <tr id={rowID}>
             <td>{booking.first_name}</td>
@@ -59,7 +69,8 @@ export default class ReceptionTable extends Component {
             <td>{booking.service_name}</td>
             <td>{start.toLocaleDateString() + ' at ' + time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>
-            <td><button className="btn btn-primary" style={{display: display}} onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
+            <td><button className="btn btn-primary" style={{display: paidDisplay}} onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
+            <td><button className="btn btn-warning" style={{display: covidDisplay}} onClick={(e) => this.handleCovid(e, booking.id)}>COVID</button></td>
             <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id, rowID)}>Delete</button></td>
         </tr>;
     }
@@ -83,6 +94,7 @@ export default class ReceptionTable extends Component {
                         <th>Time</th>
                         <th>Amount Due</th>
                         <th>Is Paid?</th>
+                        <th>COVID</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
