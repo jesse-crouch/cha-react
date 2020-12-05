@@ -24,26 +24,78 @@ export default class CovidScreening extends Component {
     }
 
     componentDidMount() {
-        var symptomCheck = document.getElementById('symptomCheck');
-        var canadaCheck = document.getElementById('canadaCheck');
-        var contactCheck = document.getElementById('contactCheck');
+        var symptomNo = document.getElementById('symptomNo');
+        var canadaNo = document.getElementById('canadaNo');
+        var contactNo = document.getElementById('contactNo');
 
-        symptomCheck.addEventListener('change', () => {
-            if (symptomCheck.checked && canadaCheck.checked && contactCheck.checked) {
+        symptomNo.addEventListener('change', () => {
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
+                document.getElementById('continueBtn').style.display = '';
+            } else {
+                document.getElementById('continueBtn').style.display = 'none';
+            }
+
+            if (symptomNo.checked) {
+                symptomYes.checked = false;
+            }
+        });
+
+        canadaNo.addEventListener('change', () => {
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
+                document.getElementById('continueBtn').style.display = '';
+            } else {
+                document.getElementById('continueBtn').style.display = 'none';
+            }
+
+            if (canadaNo.checked) {
+                canadaYes.checked = false;
+            }
+        });
+
+        contactNo.addEventListener('change', () => {
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
+                document.getElementById('continueBtn').style.display = '';
+            } else {
+                document.getElementById('continueBtn').style.display = 'none';
+            }
+
+            if (contactNo.checked) {
+                contactYes.checked = false;
+            }
+        });
+
+        var symptomYes = document.getElementById('symptomYes');
+        var canadaYes = document.getElementById('canadaYes');
+        var contactYes = document.getElementById('contactYes');
+
+        symptomYes.addEventListener('change', () => {
+            if (symptomYes.checked) {
+                symptomNo.checked = false;
+            }
+
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
                 document.getElementById('continueBtn').style.display = '';
             } else {
                 document.getElementById('continueBtn').style.display = 'none';
             }
         });
-        canadaCheck.addEventListener('change', () => {
-            if (symptomCheck.checked && canadaCheck.checked && contactCheck.checked) {
+        canadaYes.addEventListener('change', () => {
+            if (canadaYes.checked) {
+                canadaNo.checked = false;
+            }
+
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
                 document.getElementById('continueBtn').style.display = '';
             } else {
                 document.getElementById('continueBtn').style.display = 'none';
             }
         });
-        contactCheck.addEventListener('change', () => {
-            if (symptomCheck.checked && canadaCheck.checked && contactCheck.checked) {
+        contactYes.addEventListener('change', () => {
+            if (contactYes.checked) {
+                contactNo.checked = false;
+            }
+
+            if (symptomNo.checked && canadaNo.checked && contactNo.checked) {
                 document.getElementById('continueBtn').style.display = '';
             } else {
                 document.getElementById('continueBtn').style.display = 'none';
@@ -56,17 +108,43 @@ export default class CovidScreening extends Component {
             <div className="container" style={{marginTop: "2em"}}>
                 <div className="w-75" style={{margin: "0 auto"}}>
                     <div className="form-group">
-                        <label for="inputEmail4">Do they have no symptoms?</label>
-                        <input className="form-control" id="symptomCheck" type="checkbox" />
+                        <label for="inputEmail4">Do they have any symptoms?</label>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="symptomYes" type="radio" />
+                            <label for="symptomYes">Yes</label>
+                        </div>
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="symptomNo" type="radio" />
+                            <label for="symptomNo">No</label>
+                        </div>
                     </div>
                     <div className="form-group">
-                        <label for="inputAddress">Have they been within Canada for the last 14 days?</label>
-                        <input className="form-control" id="canadaCheck" type="checkbox" />
+                        <label for="inputEmail4">Have they travelled outside Canada in the last 14 days?</label>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="canadaYes" type="radio" />
+                            <label for="symptomYes">Yes</label>
+                        </div>
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="canadaNo" type="radio" />
+                            <label for="symptomNo">No</label>
+                        </div>
                     </div>
                     <div className="form-group">
-                        <label for="inputAddress">Have they had no close contact with someone with symptoms?</label>
-                        <input className="form-control" id="contactCheck" type="checkbox" />
-
+                        <label for="inputEmail4">Have they been in close contact with a confirmed or probable case?</label>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="contactYes" type="radio" />
+                            <label for="symptomYes">Yes</label>
+                        </div>
+                        <div className="form-group col-md-6">
+                            <input className="form-control" id="contactNo" type="radio" />
+                            <label for="symptomNo">No</label>
+                        </div>
                     </div>
                     <div className="text-center">
                         <button className="btn btn-primary" style={{display: 'none'}} id="continueBtn" onClick={this.handleContinue}>Continue</button>

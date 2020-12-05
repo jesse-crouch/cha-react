@@ -5,6 +5,7 @@ import { setPopupContent, togglePopup } from './popupMethods';
 import $ from 'jquery';
 import { uuid } from 'uuidv4';
 import CovidScreening from './CovidScreening';
+import { FaCheck } from 'react-icons/fa';
 
 export default class ReceptionTable extends Component {
     constructor(props) {
@@ -54,9 +55,9 @@ export default class ReceptionTable extends Component {
         end.setUTCMinutes(end.getUTCMinutes() + (60*booking.duration));
 
         var paidDisplay = booking.amount_due === 0 ? 'none' : '';
-        console.log(booking.covid_screened);
-        var covidDisplay = booking.covid_screened === true ? 'none' : '';
-        alert(covidDisplay);
+        var covidBtn = booking.covid_screened === true ?
+            <button className="btn btn-success"><FaCheck /></button> :
+            <button className="btn btn-warning" onClick={(e) => this.handleCovid(e, booking.id)}>COVID</button>;
         var rowID = uuid();
 
         return <tr id={rowID}>
@@ -70,7 +71,7 @@ export default class ReceptionTable extends Component {
             <td>{start.toLocaleDateString() + ' at ' + time(start) + ' - ' + time(end)}</td>
             <td>{booking.amount_due}</td>
             <td><button className="btn btn-primary" style={{display: paidDisplay}} onClick={(e) => this.handlePaid(e, booking.id)}>Is Paid?</button></td>
-            <td><button className="btn btn-warning" style={{display: covidDisplay}} onClick={(e) => this.handleCovid(e, booking.id)}>COVID</button></td>
+            <td>{covidBtn}</td>
             <td><button className="btn btn-danger" onClick={() => this.handleDelete(booking.id, rowID)}>Delete</button></td>
         </tr>;
     }
