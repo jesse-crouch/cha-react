@@ -107,7 +107,23 @@ export default class EventManager extends Component {
                         events.push(result.events[j]);
                     }
                 }
-                days.push(<Day key={uuid()} events={events} date={date.getTime()} eventHandler={this.handleEventClick} managed={true} />);
+
+                // Loop through blocked days and times
+                var blocked_times = [], blocked_days = [];
+                for (var k in result.blocked_times) {
+                    var blockedDate = new Date(result.blocked_times[k].epoch_date*1000);
+                    if (blockedDate.getDay() === i) {
+                        blocked_times.push(result.blocked_times[k]);
+                    }
+                }
+                for (var k in result.blocked_days) {
+                    var blockedDate = new Date(result.blocked_days[k].epoch_date*1000);
+                    if (blockedDate.getDay() === i) {
+                        blocked_times.push(result.blocked_days[k]);
+                    }
+                }
+
+                days.push(<Day key={uuid()} events={events} blocked_times={blocked_times} blocked_days={blocked_days} date={date.getTime()} eventHandler={this.handleEventClick} managed={true} />);
                 date.setDate(date.getDate() + 1);
             }
             date.setDate(date.getDate()-7);
@@ -138,7 +154,7 @@ export default class EventManager extends Component {
                     <h1>{monthNames[this.state.currentDate.getMonth()]}</h1>
                     <button id="nextBtn" className="btn btn-light" onClick={() => this.changeWeek(true)}>Next</button>
                 </div>
-                <div id="week" className="week" style={{height: '82vh'}}>
+                <div id="week" className="week" style={{height: '79vh'}}>
                     {this.state.days}
                 </div>
                 <div id="btnFixedDiv">

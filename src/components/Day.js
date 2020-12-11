@@ -10,6 +10,12 @@ export default class Day extends Component {
             events: props.events.map(event => {
                 return <Event key={uuid()} event={event} eventHandler={props.eventHandler} managed={props.managed} />
             }),
+            blocked_times: props.blocked_times.map(blocked => {
+                return <Event key={uuid()} event={blocked} />
+            }),
+            blocked_days: props.blocked_days.map(blocked => {
+                return <Event key={uuid()} event={blocked} />
+            }),
             date: new Date(props.date)
         };
     }
@@ -25,6 +31,8 @@ export default class Day extends Component {
             <div className="day" style={{background: background}}>
                 <p>{this.state.date.getDate()}</p>
                 {this.state.events}
+                {this.state.blocked_times}
+                {this.state.blocked_days}
             </div>
         )
     }

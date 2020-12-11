@@ -7,7 +7,7 @@ export default function Event(props) {
     const end = new Date(start.getTime());
     var duration = props.event.duration === null ? props.event.serviceduration : props.event.duration;
     end.setUTCMinutes(end.getUTCMinutes() + (duration*60));
-    const height = (5*duration) + 'em';
+    const height = (5*(duration === 100 ? 9 : duration)) + 'em';
 
     // Check if this event is in the past if unmanaged
     var display = '';
@@ -64,6 +64,7 @@ export default function Event(props) {
     if (props.event.open_spots === 0) buttonText = 'Booked';
     if (props.event.name === 'Class') buttonText = 'Class Booked';
     if (props.event.name === 'Unavailable') buttonText = 'Unavailable';
+    if (duration === 100) buttonText = 'Whole Day';
 
     return (
         <button id={props.event.id + 'b'} className={className} style={{height: height, display: display, background: background}} disabled={disabled} onClick={() => props.eventHandler(props.event)}>

@@ -176,6 +176,7 @@ html {
   flex: 1;
   border: 1px solid black;
   text-align: center;
+  overflow-y: overlay;
 }
 
 @media(max-width: 950px) {
