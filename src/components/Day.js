@@ -6,16 +6,22 @@ export default class Day extends Component {
     constructor(props) {
         super();
 
+        var blockedTimes = [], blockedDays = [];
+        if (props.managed) {
+            blockedTimes = props.blocked_times.map(blocked => {
+                return <Event key={uuid()} event={blocked} />
+            });
+            blockedDays = props.blocked_days.map(blocked => {
+                return <Event key={uuid()} event={blocked} />
+            });
+        }
+
         this.state = {
             events: props.events.map(event => {
                 return <Event key={uuid()} event={event} eventHandler={props.eventHandler} managed={props.managed} />
             }),
-            blocked_times: props.blocked_times.map(blocked => {
-                return <Event key={uuid()} event={blocked} />
-            }),
-            blocked_days: props.blocked_days.map(blocked => {
-                return <Event key={uuid()} event={blocked} />
-            }),
+            blocked_times: blockedTimes,
+            blocked_days: blockedDays,
             date: new Date(props.date)
         };
     }
