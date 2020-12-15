@@ -52,6 +52,10 @@ export function addSpecialToCart(service) {
     if (service === 82) eventID = 10133;
     if (service === 83) eventID = 10136;
 
+    if (service === 86) eventID = 10141;
+    if (service === 87) eventID = 10143;
+    if (service === 88) eventID = 10145;
+
     if (eventID) {
         $.post(server + '/api/getEvent', { id: eventID }, result => {
             if (!result.error) addToCart(result.event, true);
