@@ -41,7 +41,19 @@ export function toggleCart() {
 }
 
 export function addSpecialToCart(service) {
-    var eventID = null;
+    if (service.special) {
+        // This is a special service, and should have an event ID associated with it
+        //      That event ID is the first in a recurrence
+        $.post(server + '/api/getSpecialID', { id: service.id }, result => {
+            if (result.error) {
+                alert(result.error);
+            } else {
+                addToCart(result.event, true);
+            }
+        });
+    }
+
+    /*var eventID = null;
     if (service === 39) eventID = 176;
     if (service === 40) eventID = 177;
     if (service === 41) eventID = 178;
@@ -60,7 +72,7 @@ export function addSpecialToCart(service) {
         $.post(server + '/api/getEvent', { id: eventID }, result => {
             if (!result.error) addToCart(result.event, true);
         });
-    }
+    }*/
 }
 
 export function addMultiToCart(id, name, time, price) {
@@ -242,6 +254,8 @@ export function addNonEventToCart(event, userAdded) {
 }
 
 export function addToCart(event, refresh) {
+    console.log(event);
+
     var cartBody = document.getElementById('cart-table');
     var newRow = document.createElement('tr');
     newRow.id = event.id + 'r';

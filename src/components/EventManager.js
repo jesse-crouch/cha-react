@@ -73,7 +73,130 @@ export default class EventManager extends Component {
         deleteSingleBtn.className = 'btn btn-danger';
         deleteSingleBtn.style.float = 'left';
 
-        setEventContent(event, [deleteSingleBtn]);
+        // Add an 'add someone into this class' button
+        var addToClassBtn = document.createElement('button');
+        addToClassBtn.id = 'addToClassBtn';
+        addToClassBtn.onclick = () => {
+            var formDiv = document.createElement('div');
+            var form = <div>
+                <div className="form-row non-user">
+                    <div className="form-group col-md-6">
+                        <label>First Name</label>
+                        <input className="form-control" id="firstNameField" type="text" />
+                    </div>
+                    <div className="form-group col-md-6">
+                        <label>Last Name</label>
+                        <input className="form-control" id="lastNameField" type="text" />
+                    </div>
+                </div>
+                <div className="form-row non-user">
+                    <div className="form-group col-md-12">
+                        <label>Email Address</label>
+                        <input className="form-control" id="emailField" type="text" />
+                    </div>
+                </div>
+                <div className="form-row non-user">
+                    <div className="form-group col-md-12">
+                        <label>Phone Number</label>
+                        <input className="form-control" id="phoneField" type="text" />
+                    </div>
+                </div>
+                <div className="form-row non-user">
+                    <div className="form-group col-md-6">
+                        <label>Child First Name</label>
+                        <input className="form-control" id="childFirstNameField" type="text" />
+                    </div>
+                    <div className="form-group col-md-6">
+                        <label>Child Last Name</label>
+                        <input className="form-control" id="childLastNameField" type="text" />
+                    </div>
+                </div>
+                <div className="form-row non-user">
+                    <div className="form-group col-md-12">
+                        <label>Amount Due</label>
+                        <input className="form-control" id="amountDueField" type="text" />
+                    </div>
+                </div>
+                <button className="btn btn-primary" onClick={() => {
+                    var firstName = document.getElementById('firstNameField').value.toLowerCase();
+                    var lastName = document.getElementById('lastNameField').value.toLowerCase();
+                    var email = document.getElementById('emailField').value;
+                    var phone = document.getElementById('phoneField').value;
+                    var childFirstNameField = document.getElementById('childFirstNameField').value.toLowerCase();
+                    var childLastNameField = document.getElementById('childLastNameField').value.toLowerCase();
+                    var amountDueField = document.getElementById('amountDueField').value;
+
+                    var childFirstName = childFirstNameField;
+                    var childLastName = childLastNameField;
+                    var amountDue = amountDueField;
+                    if (firstName.length > 0) {
+                        document.getElementById('firstNameField').style.border = '';
+                        if (lastName.length > 0) {
+                            document.getElementById('lastNameField').style.border = '';
+                            if (email.length > 0) {
+                                document.getElementById('emailField').style.border = '';
+                                if (phone.length > 0) {
+                                    document.getElementById('phoneField').style.border = '';
+                                    if (childFirstNameField.length === 0) {
+                                        childFirstName = 'null';
+                                    }
+                                    if (childLastNameField.length === 0) {
+                                        childLastName = 'null';
+                                    }
+                                    if (amountDueField.length === 0) {
+                                        amountDue = (0).toFixed(2);
+                                    } else {
+                                        amountDue = parseFloat(amountDueField).toFixed(2);
+                                    }
+                                    // All fields are good, send the data to the server
+                                    $.post(server + '/api/addToClass', {
+                                        event_id: event.id,
+                                        service_id: event.service_id,
+                                        date: event.epoch_date,
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        email: email,
+                                        phone: phone,
+                                        childFirstName: childFirstName,
+                                        childLastName: childLastName,
+                                        amountDue: amountDue
+                                    }, result => {
+                                        if (result.error) {
+                                            alert(result.error);
+                                        } else {
+                                            togglePopup(false);
+                                            setTimeout(() => {
+                                                setPopupContent('Success', 'Successfully added to the class');
+                                                togglePopup(true);
+                                            }, 200);
+                                        }
+                                    });
+                                } else {
+                                    document.getElementById('phoneField').style.border = '1px solid red';
+                                }   
+                            } else {
+                                document.getElementById('emailField').style.border = '1px solid red';
+                            }   
+                        } else {
+                            document.getElementById('lastNameField').style.border = '1px solid red';
+                        }   
+                    } else {
+                        document.getElementById('firstNameField').style.border = '1px solid red';
+                    }
+                }}>Add</button>
+            </div>;
+
+            togglePopup(false);
+            setTimeout(() => {
+                setReactContent('Add to Class', form);
+                togglePopup(true);
+            }, 200);
+        };
+        addToClassBtn.innerHTML = 'Add to Class';
+        addToClassBtn.className = 'btn btn-primary';
+        addToClassBtn.style.float = 'left';
+
+        setEventContent(event, [deleteSingleBtn, addToClassBtn]);
         togglePopup(true);
     }
 

@@ -21,12 +21,12 @@ export default class Services extends Component {
     }
 
     handleClick(service) {
-        console.log(service.cart);
-        if (!service.cart) document.getElementById('services-page').style.opacity = 0;
+        if (!service.special) document.getElementById('services-page').style.opacity = 0;
+        console.log(service);
         setTimeout(() => {
-            if (service.cart) {
+            if (service.special) {
                 // Add this event straight to the cart
-                addSpecialToCart(service.id);
+                addSpecialToCart(service);
             } else {
                 // Check if this service has any children
                 var hasChildren = false;

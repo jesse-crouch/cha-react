@@ -47,6 +47,13 @@ export default class Account extends Component {
                 />,
                 <UserAction
                     key={uuid()}
+                    title="Reception"
+                    description="View bookings, and facilitate payments"
+                    icon={<FaCalendarAlt />}
+                    link="reception"
+                />,
+                <UserAction
+                    key={uuid()}
                     title="Employee Information"
                     description="View information about employees or add/remove them"
                     icon={<FaBriefcase />}
@@ -72,13 +79,6 @@ export default class Account extends Component {
                     description="View and update incoming sales for the day"
                     icon={<FaFileInvoiceDollar />}
                     link="pending-sales"
-                />,
-		        <UserAction
-                    key={uuid()}
-                    title="Reception"
-                    description="View bookings, and facilitate payments"
-                    icon={<FaCalendarAlt />}
-                    link="reception"
                 />,
                 <UserAction
                     key={uuid()}
