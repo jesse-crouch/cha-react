@@ -191,7 +191,7 @@ export default class AddEvent extends Component {
                 var date = new Date(Date.UTC(year, month, day, timeInfo[0], timeInfo[1],0,0));
 
                 // Check for recurrence
-                var days = [];
+                var days = [], recurrLength = 0;
                 if (document.getElementById('recurCheck').checked) {
                     // Get a list of all days checked
                     if (document.getElementById('sundayCheck').checked) days.push(0);
@@ -201,6 +201,9 @@ export default class AddEvent extends Component {
                     if (document.getElementById('thursdayCheck').checked) days.push(4);
                     if (document.getElementById('fridayCheck').checked) days.push(5);
                     if (document.getElementById('saturdayCheck').checked) days.push(6);
+
+                    var lengthSelect = document.getElementById('recurrLengthSelect');
+                    recurrLength = parseInt(lengthSelect.options[lengthSelect.selectedIndex].value.split(' ')[0]);
                 }
 
                 // Format duration if hours was chosen
@@ -219,7 +222,8 @@ export default class AddEvent extends Component {
                     date: date.getTime()/1000,
                     duration: duration,
                     durationInterval: interval,
-                    days: days.length > 0 ? JSON.stringify(days) : 'null'
+                    days: days.length > 0 ? JSON.stringify(days) : 'null',
+                    recurrLength: recurrLength == 0 ? 'null' : recurrLength
                 }, result => {
                     if (result.error) {
                         togglePopup(false);
@@ -323,6 +327,15 @@ export default class AddEvent extends Component {
                 <div>
                     <div style={{display: 'none'}} id="recurForm">
                         <h3>Recurrence</h3>
+                        <label>Recurrence length: </label>
+                        <select id="recurrLengthSelect">
+                            <option>1 Month</option>
+                            <option>2 Months</option>
+                            <option>3 Months</option>
+                            <option>4 Months</option>
+                            <option>5 Months</option>
+                            <option>6 Months</option>
+                        </select>
                         <div className="form-row">
                             <table className="table">
                                 <thead className="thead" style={{fontSize: '0.6em'}}>

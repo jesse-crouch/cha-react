@@ -58,6 +58,7 @@ export default class Reception extends Component {
         var serviceSelect = document.getElementById('serviceSelect');
         var daySelect = document.getElementById('bookingDaySelect');
         var monthSelect = document.getElementById('bookingMonthSelect');
+        var yearSelect = document.getElementById('bookingYearSelect');
         var timeSelect = document.getElementById('bookingTimeSelect');
 
         var filledFields = [];
@@ -71,11 +72,13 @@ export default class Reception extends Component {
         var service = serviceSelect.options[serviceSelect.selectedIndex];
         var day = daySelect.options[daySelect.selectedIndex].value;
         var month = monthSelect.options[monthSelect.selectedIndex];
+        var year = yearSelect.options[yearSelect.selectedIndex];
         var time = timeSelect.options[timeSelect.selectedIndex];
 
         filledFields.push((service.value.includes('Choose')) ? null : service.getAttribute('id'));
         filledFields.push((day.includes('Choose')) ? null : day);
         filledFields.push((month.value.includes('Choose')) ? null : monthSelect.selectedIndex);
+        filledFields.push((year.value.includes('Choose')) ? null : yearSelect.options[yearSelect.selectedIndex].value);
         // Extract time if select is not null
         if (!time.value.includes('Choose')) {
             var timeInfo = time.getAttribute('timeInfo').split(',');
@@ -154,19 +157,25 @@ export default class Reception extends Component {
                                 </div>
                             </div>
                             <div className="form-row">
-                                <div className="form-group col-md-4">
+                                <div className="form-group col-md-3">
                                     <label>Day</label>
                                     <select className="form-control" id="bookingDaySelect">
                                         <option>Choose a Day</option>
                                     </select>
                                 </div>
-                                <div className="form-group col-md-4">
+                                <div className="form-group col-md-3">
                                     <label>Month</label>
                                     <select className="form-control" id="bookingMonthSelect">
                                         <option>Choose a Month</option>
                                     </select>
                                 </div>
-                                <div className="form-group col-md-4">
+                                <div className="form-group col-md-3">
+                                    <label>Year</label>
+                                    <select className="form-control" id="bookingYearSelect">
+                                        <option>Choose a Year</option>
+                                    </select>
+                                </div>
+                                <div className="form-group col-md-3">
                                     <label>Time</label>
                                     <select className="form-control" id="bookingTimeSelect">
                                         <option>Choose a Time</option>
@@ -207,6 +216,18 @@ export default class Reception extends Component {
                                 var newOption = document.createElement('option');
                                 newOption.innerHTML = monthNames[i];
                                 monthSelect.appendChild(newOption);
+                            }
+
+                            // Populate year select
+                            var yearSelect = document.getElementById('bookingYearSelect');
+                            // eslint-disable-next-line
+                            var year = new Date().getFullYear() - 1;
+                            for (var i=0; i<5; i++) {
+                                // eslint-disable-next-line
+                                var newOption = document.createElement('option');
+                                newOption.innerHTML = year;
+                                yearSelect.appendChild(newOption);
+                                year++;
                             }
 
                             // Populate day select

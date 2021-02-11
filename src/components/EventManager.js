@@ -76,6 +76,7 @@ export default class EventManager extends Component {
         // Add an 'add someone into this class' button
         var addToClassBtn = document.createElement('button');
         addToClassBtn.id = 'addToClassBtn';
+        addToClassBtn.style.marginLeft = '1%';
         addToClassBtn.onclick = () => {
             var formDiv = document.createElement('div');
             var form = <div>
