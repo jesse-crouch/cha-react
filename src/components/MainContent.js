@@ -22,6 +22,8 @@ import DropIn from './DropIn';
 import Verification from './Verification';
 import PendingSales from './PendingSales';
 import ScheduleInfo from './ScheduleInfo';
+import Resources from './Resources';
+import ServicesInfo from './ServicesInfo';
 
 export default class MainContent extends Component {
     componentDidMount() {
@@ -80,6 +82,10 @@ export default class MainContent extends Component {
             content = <PendingSales />;
         } else if (url === '/schedule-info') {
             content = <ScheduleInfo />;
+        } else if (url === '/resources') {
+            content = <Resources />;
+        } else if (url.includes('/services-info')) {
+            content = <ServicesInfo />;
         }
 
         return (

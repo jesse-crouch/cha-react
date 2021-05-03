@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import server from '../fetchServer';
 import Cookies from 'js-cookie';
 import $ from 'jquery';
-import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign, FaIdCard, FaFileInvoiceDollar } from 'react-icons/fa';
+import { FaUserCircle, FaCalendarAlt, FaInfoCircle, FaBriefcase, FaUser, FaDollarSign, FaIdCard, FaFileInvoiceDollar, FaHockeyPuck, FaClipboardList } from 'react-icons/fa';
 import UserAction from './UserAction';
 import {uuid} from 'uuidv4';
 
@@ -86,6 +86,20 @@ export default class Account extends Component {
                     description="View scheduled classes within a certain timeframe"
                     icon={<FaCalendarAlt />}
                     link="schedule-info"
+                />,
+                <UserAction
+                    key={uuid()}
+                    title="Resources"
+                    description="Edit Services"
+                    icon={<FaHockeyPuck />}
+                    link="resources"
+                />,
+                <UserAction
+                    key={uuid()}
+                    title="Services"
+                    description="Edit Services"
+                    icon={<FaClipboardList />}
+                    link="services-info?parent=0"
                 />
             ];
             var receptionActions = [

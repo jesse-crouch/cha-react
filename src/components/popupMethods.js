@@ -82,7 +82,7 @@ export function setReactContent(title, content, width = '') {
     popup.style.width = width;
 }
 
-export function setHTMLContent(title, content, width = '', cartButton = false, employeeButton = false) {
+export function setHTMLContent(title, content, width = '', cartButton = false, actionButton = null) {
     var popup = document.getElementById('popup');
     popup.children[0].innerHTML = title;
     removeContent();
@@ -212,48 +212,17 @@ export function setHTMLContent(title, content, width = '', cartButton = false, e
         document.getElementById('popup-footer').insertBefore(addBtn, closeBtn);
     }
 
-    if (employeeButton) {
+    if (actionButton !== null) {
         // Add an add to cart button to the popup
-        var employeeBtn = document.createElement('button');
-        employeeBtn.id = 'addEmployeeBtn';
-        employeeBtn.onclick = () => {
-            var cardID = document.getElementById('cardIDField').value;
-            cardID = cardID === '' ? 0 : parseInt(cardID);
+        var actionBtn = document.createElement('button');
+        actionBtn.id = 'actionBtn';
+        actionBtn.onclick = actionButton[0];
 
-            $.post(server + '/api/newEmployee', {
-                first_name: document.getElementById('firstNameField').value,
-                last_name: document.getElementById('lastNameField').value,
-                email: document.getElementById('emailField').value,
-                phone: document.getElementById('phoneField').value,
-                pay: parseInt(document.getElementById('payField').value),
-                cardID: cardID,
-                hourly: document.getElementById('payTypeSelect').selectedIndex === 0,
-                instructor: document.getElementById('instructorCheck').checked,
-                token: Cookies.get('token')
-            }, result => {
-                if (result.error) {
-                    togglePopup(false);
-                    setTimeout(() => {
-                        setPopupContent('Error', result.error);
-                        togglePopup(true);
-                    }, 500);
-                } else {
-                    togglePopup(false);
-                    setTimeout(() => {
-                        setPopupContent('Success', 'New employee added, refreshing shortly...');
-                        togglePopup(true);
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
-                    }, 500);
-                }
-            });
-        };
-        employeeBtn.className = 'btn btn-primary';
-        employeeBtn.style.float = 'left';
-        employeeBtn.innerHTML = 'Add Employee';
+        actionBtn.className = 'btn btn-primary';
+        actionBtn.style.float = 'left';
+        actionBtn.innerHTML = actionButton[1];
         var closeButton = document.getElementById('popupCloseBtn');
-        document.getElementById('popup-footer').insertBefore(employeeBtn, closeButton);
+        document.getElementById('popup-footer').insertBefore(actionBtn, closeButton);
     }
 }
 

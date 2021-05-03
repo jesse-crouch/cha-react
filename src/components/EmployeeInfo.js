@@ -148,7 +148,39 @@ export default class EmployeeInfo extends Component {
             </div>
         </div>;
 
-        setHTMLContent('New Employee', content, '', false, true);
+        setHTMLContent('New Employee', content, '', false, [() => {
+            var cardID = document.getElementById('cardIDField').value;
+            cardID = cardID === '' ? 0 : parseInt(cardID);
+
+            $.post(server + '/api/newEmployee', {
+                first_name: document.getElementById('firstNameField').value,
+                last_name: document.getElementById('lastNameField').value,
+                email: document.getElementById('emailField').value,
+                phone: document.getElementById('phoneField').value,
+                pay: parseInt(document.getElementById('payField').value),
+                cardID: cardID,
+                hourly: document.getElementById('payTypeSelect').selectedIndex === 0,
+                instructor: document.getElementById('instructorCheck').checked,
+                token: Cookies.get('token')
+            }, result => {
+                if (result.error) {
+                    togglePopup(false);
+                    setTimeout(() => {
+                        setPopupContent('Error', result.error);
+                        togglePopup(true);
+                    }, 500);
+                } else {
+                    togglePopup(false);
+                    setTimeout(() => {
+                        setPopupContent('Success', 'New employee added, refreshing shortly...');
+                        togglePopup(true);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }, 500);
+                }
+            });
+        }, 'Add Employee']);
         togglePopup(true);
     }
 

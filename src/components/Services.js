@@ -31,10 +31,8 @@ export default class Services extends Component {
                 // Check if this service has any children
                 var hasChildren = false;
                 for (var i in this.state.services) {
-                    if (this.state.services[i].id_chain) {
-                        if (this.state.services[i].id_chain.includes(service.id)) {
-                            hasChildren = true;
-                        }
+                    if (this.state.services[i].parent === service.id) {
+                        hasChildren = true;
                     }
                 }
 
@@ -78,7 +76,6 @@ export default class Services extends Component {
     componentDidMount() {
         $.get(server + '/api/getAllServices', result => {
             if (!result.error) {
-                console.log(result);
                 this.setState(prevState => {
                     return {
                         level: 1,
@@ -115,18 +112,17 @@ export default class Services extends Component {
 
         // Determine the correct services to render based on the current state
         var services = [];
+        console.log(this.state.services);
         if (this.state.services.length > 0) {
             for (var i in this.state.services) {
                 const service = this.state.services[i];
                 if (!this.state.parent) {
-                    if (!service.id_chain && !service.disabled) {
+                    if (!service.parent && !service.disabled) {
                         services.push(<Service key={uuid()} handleClick={this.handleClick} service={service} />);
                     }
                 } else {
-                    if (service.id_chain) {
-                        if (service.id_chain.includes(this.state.parent) && service.id_chain.length === (this.state.level - 1) && !service.disabled) {
-                            services.push(<Service key={uuid()} handleClick={this.handleClick} service={service} />);
-                        }
+                    if (service.parent === this.state.parent && !service.disabled) {
+                        services.push(<Service key={uuid()} handleClick={this.handleClick} service={service} />);
                     }
                 }
             }
