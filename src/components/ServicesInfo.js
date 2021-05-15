@@ -284,7 +284,7 @@ export default class ServicesInfo extends Component {
             <div className="form-row">
                 <div className="form-group col-md-12">
                     <label>Disabled?</label>
-                    <input id="disableCheck" className="form-control" type="checkbox" checked={service.disabled} />
+                    <input id="disableCheck" className="form-control" type="checkbox" />
                 </div>
             </div>
         </div>;
@@ -337,6 +337,7 @@ export default class ServicesInfo extends Component {
         document.getElementById('point1Field').value = service.description[1];
         document.getElementById('point2Field').value = service.description[2];
         document.getElementById('point3Field').value = service.description[3];
+        document.getElementById('disableCheck').checked = service.disabled;
     }
 
     filterServices() {

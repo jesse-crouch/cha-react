@@ -44,6 +44,41 @@ export default class Resources extends Component {
         });
     }
 
+    updateResource(button) {
+        var start = button.target.parentElement.children[1].value;
+        var end = button.target.parentElement.children[2].value;
+
+        if (start.includes('PM')) {
+            var hour = parseInt(start.split(' ')[0].split(':')[0]);
+            start = (hour+12) + ':' + start.split(' ')[0].split(':')[1];
+        } else {
+            start = start.split(' ')[0];
+        }
+        if (end.includes('PM')) {
+            var hour = parseInt(end.split(' ')[0].split(':')[0]);
+            end = (hour+12) + ':' + end.split(' ')[0].split(':')[1];
+        } else {
+            end = end.split(' ')[0];
+        }
+
+        console.log(start + ',' + end);
+
+        /*$.post(server + '/api/updateResource', {
+            token: Cookies.get('token'),
+            id: button.target.getAttribute('resource'),
+            start: start,
+            end: end
+        }, result => {
+            if (result.error) {
+                setPopupContent('Error', result.error);
+                togglePopup(true);
+            } else {
+                togglePopup(false);
+                window.location.reload();
+            }
+        });*/
+    }
+
     newRow(resource) {
         return <tr id={'r-' + resource.id} key={uuid()}>
             <td>{resource.name}</td>
