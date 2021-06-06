@@ -216,9 +216,10 @@ export default class ServicesInfo extends Component {
         for (var i in this.state.services) {
             options.push(<option service={this.state.services[i].props.service.id}>{this.state.services[i].props.service.name}</option>);
             if (this.state.services[i].props.service.id === service.parent) {
-                parentIndex = i+1;
+                parentIndex = Number(i) + 1;
             }
         }
+        console.log(parentIndex);
         for (var i in this.state.resources) {
             resourceOptions.push(<option resource={this.state.resources[i].id}>{this.state.resources[i].name}</option>);
             if (this.state.resources[i].id === service.resource_id) {
@@ -296,7 +297,6 @@ export default class ServicesInfo extends Component {
             var resourceSelect = document.getElementById('resourceSelect');
             var disabled = document.getElementById('disableCheck').checked;
             var parent = parentSelect.options[parentSelect.selectedIndex].getAttribute('service');
-            resourceSelect.selectedIndex = resourceIndex;
             var description = JSON.stringify([
                 document.getElementById('subtitleField').value,
                 document.getElementById('point1Field').value,
@@ -329,6 +329,7 @@ export default class ServicesInfo extends Component {
         togglePopup(true);
 
         document.getElementById('parentSelect').selectedIndex = parentIndex;
+        document.getElementById('resourceSelect').selectedIndex = resourceIndex;
 
         document.getElementById('nameField').value = service.name;
         document.getElementById('priceDollarField').value = service.price.split('/')[0];
