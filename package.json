@@ -15,7 +15,7 @@
     "react-csv": "^2.0.3",
     "react-dom": "^16.14.0",
     "react-icons": "^3.11.0",
-    "react-scripts": "3.4.0",
+    "react-scripts": "5.0.1",
     "react-square-payment-form": "^0.6.3",
     "react-stripe-checkout": "^2.6.3",
     "table2csv": "^1.1.4",
